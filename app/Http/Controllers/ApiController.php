@@ -7,6 +7,9 @@ use App\Models\Column;
 use App\Models\Board;
 use Illuminate\Http\Request;
 use App\Enums\CardTypeEnum;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TaskCreatedMail;
+use App\Models\User;
 
 class ApiController extends Controller
 {
@@ -25,15 +28,12 @@ class ApiController extends Controller
             'subtasks' => 'nullable|array',
         ]);
 
-        // 1. Находим доску по UUID
         $board = Board::where('uuid', $validated['board_uuid'])->firstOrFail();
 
-        // 2. Находим колонку по thread
         $column = Column::where('board_id', $board->id)
             ->where('thread', $validated['thread'])
             ->first();
 
-        // 3. Если колонки нет → используем thread = 0
         if (!$column) {
             $column = Column::where('board_id', $board->id)
                 ->where('thread', 0)
@@ -42,18 +42,18 @@ class ApiController extends Controller
 
         $type = CardTypeEnum::from($validated['type']);
 
-        // 4. Дефолтные данные по типу
         $defaults = $this->defaultsByType($type);
 
-        // 5. Объединяем дефолты и входные данные
         $payload = array_merge($defaults, $validated);
 
-        // 6. Проставляем реальные ID
         $payload['board_id'] = $board->id;
         $payload['column_id'] = $column->id;
 
-        // 7. Создаём задачу
         $task = Task::create($payload);
+
+        $ownerEmail = 'owner@example.com';
+        
+        Mail::to($ownerEmail)->send(new TaskCreatedMail($task));
 
         return response()->json([
             'success' => true,
