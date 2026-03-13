@@ -385,6 +385,7 @@ textarea {
     .kanban-column {
         width: 100%;
         max-width: 400px;
+        min-width: 100%;
     }
 
     header {
