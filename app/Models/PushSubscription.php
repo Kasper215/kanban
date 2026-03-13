@@ -9,6 +9,7 @@ class PushSubscription extends Model
         'endpoint',
         'public_key',
         'auth_token',
+        'board_id',
         'content_encoding',
     ];
 }
