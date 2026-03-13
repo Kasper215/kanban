@@ -20,7 +20,9 @@ class ManifestController extends Controller
             "start_url" => $boardUuid
                 ? "https://crm.your-cashman.com/board/$boardUuid?source=pwa"
                 : "https://crm.your-cashman.com/?source=pwa",
-            "scope" => "/",
+            "scope" =>  $boardUuid
+                ? "https://crm.your-cashman.com/board/"
+                : "https://crm.your-cashman.com/",
             "display" => "standalone",
             "background_color" => "#ffffff",
             "theme_color" => "#1976d2",
