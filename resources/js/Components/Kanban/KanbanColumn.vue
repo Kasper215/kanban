@@ -52,17 +52,17 @@
 
         <div class="kanban-tasks">
             <KanbanTask
-                v-for="task in column.tasks"
-                :key="task.id"
-                :task="task"
-                draggable="true"
-                @dragstart="onDragStart(task)"
-                @edit="editTask"
+            v-for="task in column.tasks"
+            :key="task.id"
+            :task="task"
+            draggable="true"
+            @dragstart="onDragStart(task)"
+            @edit="editTask"
 
-                @drop="onTaskDrop(task)"
-                @duplicate="duplicateTask"
-                @delete="deleteTask"
-            />
+            @drop="onTaskDrop(task)"
+            @duplicate="duplicateTask"
+            @delete="deleteTask"
+        />
 
             <button
                 v-if="canLoadMore"

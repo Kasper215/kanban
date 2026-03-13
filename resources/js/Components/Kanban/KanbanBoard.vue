@@ -52,9 +52,37 @@
 
         </header>
 
-        <div
+        <div class="flex flex-col h-screen d-flex d-md-none ">
+            <!-- вкладки -->
+            <div class="flex overflow-x-auto border-b mb-2 pb-2">
+                <button
+                    type="button"
+                    v-for="col in store.columns"
+                    :key="col.id"
+                    class="px-4 mx-1 py-2 whitespace-nowrap cursor-pointer btn"
+                    :class="{'btn-primary': activeColumn === col.id ,'btn-secondary': activeColumn !== col.id}"
+                    @click="activeColumn = col.id"
+                >
+                    {{ col.title }}
+                </button>
+            </div>
 
-            class="kanban-board d-flex gap-3 ">
+            <!-- контент -->
+            <div class="flex-1 overflow-y-auto">
+
+                <template v-if="getActiveColumn">
+                    <KanbanColumn
+                        :column="getActiveColumn"
+                        @add-task="openTaskModal">
+                    </KanbanColumn>
+
+                </template>
+
+            </div>
+        </div>
+
+        <div
+            class="kanban-board gap-3 d-none d-md-flex">
             <div
                 :key="column?.id||'column'+index"
                 v-for="(column, index) in store.columns"
@@ -113,14 +141,15 @@ import TaskModal from './TaskModal.vue'
 import ColumnModal from './ColumnModal.vue'
 import ConfirmModal from "@/Components/Kanban/ConfirmModal.vue";
 import TokenModal from '@/Components/Kanban/TokenModal.vue'
-
+import KanbanTask from './KanbanTask.vue'
 
 export default {
-    components: {KanbanColumn, TaskModal, ColumnModal, ConfirmModal, TokenModal},
+    components: {KanbanColumn, TaskModal, ColumnModal, ConfirmModal, TokenModal,KanbanTask},
     props: {initialBoard: Object},
 
     data() {
         return {
+            activeColumn: 0,
             showTokenModal: false,
             showDeleteModal: false,
             showTaskModal: false,
@@ -135,10 +164,16 @@ export default {
         }
     },
 
+    computed:{
+        getActiveColumn()  {
+            return this.store.columns.find(c => c.id === this.activeColumn)
+        }
+    },
     mounted() {
         this.store.columns = this.initialBoard.columns
         this.store.board = this.initialBoard
 
+        this.activeColumn = this.store.columns[0]?.id || null
         /*   this.store.columns.forEach(col => {
                this.store.loadTasks(col.id)
            })
@@ -147,6 +182,10 @@ export default {
     },
 
     methods: {
+
+        getTasks(columnId) {
+            return this.store.columns.find(c => c.id === columnId)?.tasks ?? []
+        },
         openTokenModal() {
             this.showTokenModal = true
         },
