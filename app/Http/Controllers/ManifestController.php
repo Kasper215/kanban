@@ -18,8 +18,8 @@ class ManifestController extends Controller
             "name" => "KanbanCRM",
             "short_name" => "Kanban",
             "start_url" => $boardUuid
-                ? "/board/{$boardUuid}?source=pwa"
-                : "/?source=pwa",
+                ? "https://crm.your-cashman.com/board/$boardUuid?source=pwa"
+                : "https://crm.your-cashman.com/?source=pwa",
             "scope" => "/",
             "display" => "standalone",
             "background_color" => "#ffffff",
