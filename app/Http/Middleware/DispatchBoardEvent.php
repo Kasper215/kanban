@@ -6,6 +6,7 @@ use App\Events\BoardUpdated;
 use App\Models\Board;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class DispatchBoardEvent
@@ -23,8 +24,9 @@ class DispatchBoardEvent
         // достаём board_uuid из сессии
         $boardUuid = session('board_uuid') ?? null;
 
+        Log::info("boardUuid $boardUuid");
         $boardId = $request->board_id ?? null;
-
+        Log::info("boardId $boardId");
         $isSend = false;
 
         if (!is_null($boardUuid)) {

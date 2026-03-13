@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\BoardUpdated;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Log;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
 use NotificationChannels\WebPush\PushSubscription;
@@ -26,6 +27,8 @@ class SendBoardUpdateNotification
     public function handle(BoardUpdated $event): void
     {
         $board = $event->board;
+
+        Log::info("board ".print_r($board, true));
 
         $auth = [
             'VAPID' => [
@@ -50,7 +53,7 @@ class SendBoardUpdateNotification
             'url'   => '/',
         ]);
 
-        $subscriptions = PushSubscription::where("board_id", $board->id)
+        $subscriptions = \App\Models\PushSubscription::where("board_id", $board->id)
             ->get();
 
         foreach ($subscriptions as $sub) {
