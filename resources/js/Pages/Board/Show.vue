@@ -121,6 +121,9 @@ export default {
             if (event.data?.type === 'request-update') {
                 this.progress = 0
 
+                clearInterval(progressTimer)
+                clearInterval(refreshTimer)
+
                 progressTimer = setInterval(() => {
                     this.progress += 100 / 600
                     if (this.progress >= 100) {
