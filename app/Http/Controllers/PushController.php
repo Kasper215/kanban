@@ -22,12 +22,14 @@ class PushController extends Controller
             ->where("uuid", $boardUuid)
             ->first();
 
+        $data = $request->subscription;
+
         PushSubscription::updateOrCreate(
-            ['endpoint' => $request->endpoint],
+            ['endpoint' => $data->endpoint],
             [
                 'board_id'=>$board->id ?? null,
-                'public_key' => $request->keys['p256dh'],
-                'auth_token' => $request->keys['auth'],
+                'public_key' => $data->keys['p256dh'],
+                'auth_token' => $data->keys['auth'],
                 'content_encoding' => 'aesgcm', // всегда так для Chrome/Android
             ]
         );
