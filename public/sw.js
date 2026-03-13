@@ -44,13 +44,16 @@ self.addEventListener('push', event => {
         self.registration.showNotification(title, options)
     )
 
-    const updateEvent = new CustomEvent('request-update', {
-        detail: {
-            title: title,
-            body: data.body || '',
-        }
+    self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+            client.postMessage({
+                type: 'request-update',
+                title: title,
+                body: data.body || ''
+            });
+        });
     });
-    window.dispatchEvent(updateEvent);
+
 })
 
 // Клик по уведомлению

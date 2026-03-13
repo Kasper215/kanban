@@ -131,9 +131,11 @@ export default {
             this.progress = 0
         }, 60000)*/
 
-        window.addEventListener('request-update', async (e) => {
-            console.log('Получено событие:', e.detail);
-            await this.store.loadBoard(this.board.uuid)
+
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data?.type === 'request-update') {
+                this.store.loadBoard(this.board.uuid)
+            }
         });
 
 
