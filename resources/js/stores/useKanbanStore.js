@@ -59,7 +59,7 @@ export const useKanbanStore = defineStore('kanban', {
             try {
                 const {data} = await axios.post(`/api/boards/${uuid}/columns`, {
                     title,
-                    board_uuid: this.state.board.uuid
+                    board_uuid:this.board.uuid
                 })
 
                 // Добавляем колонку в состояние
@@ -103,7 +103,7 @@ export const useKanbanStore = defineStore('kanban', {
         async markTaskViewed(taskId) {
             try {
                 await axios.post(`/api/tasks/${taskId}/view` ,{
-                    board_uuid: this.state.board.uuid
+                    board_uuid:this.board.uuid
                 })
 
                 // обновляем локально
@@ -125,7 +125,7 @@ export const useKanbanStore = defineStore('kanban', {
             try {
                 const {data} = await axios.put(`/api/columns/${columnId}`, {
                     ...payload,
-                    board_uuid: this.state.board.uuid
+                    board_uuid:this.board.uuid
                 })
                 const idx = this.columns.findIndex(c => c.id === columnId)
                 if (idx !== -1) this.columns[idx] = data
@@ -161,7 +161,7 @@ export const useKanbanStore = defineStore('kanban', {
                     due_date: task.dueDate,
                     labels: task.labels ?? [],
                     tag_ids: task.tagIds ?? [],
-                    board_uuid: this.state.board.uuid
+                    board_uuid:this.board.uuid
                 })
 
                 const column = this.getColumnById(data.column_id)
@@ -184,7 +184,7 @@ export const useKanbanStore = defineStore('kanban', {
                     due_date: task.dueDate,
                     labels: task.labels ?? [],
                     tag_ids: task.tagIds ?? [],
-                    board_uuid: this.state.board.uuid
+                    board_uuid:this.board.uuid
                 })
 
                 const column = this.getColumnById(data.column_id)
@@ -218,7 +218,7 @@ export const useKanbanStore = defineStore('kanban', {
                     task_id: taskId,
                     to_column_id: toColumnId,
                     position: newPosition,
-                    board_uuid: this.state.board.uuid
+                    board_uuid:this.board.uuid
                 })
 
                 // Локально обновляем без повторной загрузки
@@ -250,7 +250,7 @@ export const useKanbanStore = defineStore('kanban', {
             try {
                 const {data} = await axios.put(`/api/columns/${columnId}`, {
                     title: newTitle,
-                    board_uuid: this.state.board.uuid
+                    board_uuid:this.board.uuid
                 })
 
                 const idx = this.columns.findIndex(c => c.id === columnId)
@@ -282,14 +282,14 @@ export const useKanbanStore = defineStore('kanban', {
             // отправляем новый порядок
             await axios.put(`/api/columns/${columnId}/tasks/reorder`, {
                 order: tasks.map(t => t.id),
-                board_uuid: this.state.board.uuid
+                board_uuid:this.board.uuid
             })
         }
         ,
         async duplicateTask(task) {
             try {
                 const {data} = await axios.post(`/api/tasks/${task.id}/duplicate`,{
-                    board_uuid: this.state.board.uuid
+                    board_uuid:this.board.uuid
                 })
 
                 const column = this.getColumnById(data.column_id)
@@ -325,7 +325,7 @@ export const useKanbanStore = defineStore('kanban', {
 
            return await axios.put(`/api/boards/${this.board.uuid}/columns/reorder`, {
                 order,
-               board_uuid: this.state.board.uuid
+               board_uuid:this.board.uuid
             })
         },
         async deleteTag(tagId) {
