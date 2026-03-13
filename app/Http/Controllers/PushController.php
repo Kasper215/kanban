@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Board;
+use App\Models\PushSubscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
-use NotificationChannels\WebPush\PushSubscription;
+
 
 class PushController extends Controller
 {
@@ -24,7 +25,7 @@ class PushController extends Controller
 
         $data = $request->subscription;
 
-        \App\Models\PushSubscription::updateOrCreate(
+      PushSubscription::updateOrCreate(
             ['endpoint' => $data["endpoint"]],
             [
                 'board_id'=>$board->id ?? null,
