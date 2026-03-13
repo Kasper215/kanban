@@ -58,7 +58,8 @@ export const useKanbanStore = defineStore('kanban', {
         async createColumn(uuid, title) {
             try {
                 const {data} = await axios.post(`/api/boards/${uuid}/columns`, {
-                    title
+                    title,
+                    board_uuid: this.state.board.uuid
                 })
 
                 // Добавляем колонку в состояние
@@ -101,7 +102,9 @@ export const useKanbanStore = defineStore('kanban', {
         },
         async markTaskViewed(taskId) {
             try {
-                await axios.post(`/api/tasks/${taskId}/view`)
+                await axios.post(`/api/tasks/${taskId}/view` ,{
+                    board_uuid: this.state.board.uuid
+                })
 
                 // обновляем локально
                 const task = this.columns
@@ -120,7 +123,10 @@ export const useKanbanStore = defineStore('kanban', {
 
         async updateColumn(columnId, payload) {
             try {
-                const {data} = await axios.put(`/api/columns/${columnId}`, payload)
+                const {data} = await axios.put(`/api/columns/${columnId}`, {
+                    ...payload,
+                    board_uuid: this.state.board.uuid
+                })
                 const idx = this.columns.findIndex(c => c.id === columnId)
                 if (idx !== -1) this.columns[idx] = data
             } catch (e) {
@@ -130,7 +136,7 @@ export const useKanbanStore = defineStore('kanban', {
 
         async deleteColumn(columnId) {
             try {
-                await axios.delete(`/api/columns/${columnId}`)
+                await axios.delete(`/api/columns/${columnId}?board_uuid=${this.state.board.uuid}`)
                 this.columns = this.columns.filter(c => c.id !== columnId)
             } catch (e) {
                 console.error(e)
@@ -154,7 +160,8 @@ export const useKanbanStore = defineStore('kanban', {
                     priority: task.priority,
                     due_date: task.dueDate,
                     labels: task.labels ?? [],
-                    tag_ids: task.tagIds ?? []
+                    tag_ids: task.tagIds ?? [],
+                    board_uuid: this.state.board.uuid
                 })
 
                 const column = this.getColumnById(data.column_id)
@@ -176,7 +183,8 @@ export const useKanbanStore = defineStore('kanban', {
                     priority: task.priority,
                     due_date: task.dueDate,
                     labels: task.labels ?? [],
-                    tag_ids: task.tagIds ?? []
+                    tag_ids: task.tagIds ?? [],
+                    board_uuid: this.state.board.uuid
                 })
 
                 const column = this.getColumnById(data.column_id)
@@ -194,7 +202,7 @@ export const useKanbanStore = defineStore('kanban', {
 
         async deleteTask(taskId) {
             try {
-                await axios.delete(`/api/tasks/${taskId}`)
+                await axios.delete(`/api/tasks/${taskId}?board_uuid=${this.state.board.uuid}`)
                 this.columns.forEach(col => {
                     col.tasks = col.tasks.filter(t => t.id !== taskId)
                 })
@@ -209,7 +217,8 @@ export const useKanbanStore = defineStore('kanban', {
                 await axios.post('/api/tasks/move', {
                     task_id: taskId,
                     to_column_id: toColumnId,
-                    position: newPosition
+                    position: newPosition,
+                    board_uuid: this.state.board.uuid
                 })
 
                 // Локально обновляем без повторной загрузки
@@ -240,7 +249,8 @@ export const useKanbanStore = defineStore('kanban', {
         async renameColumn(columnId, newTitle) {
             try {
                 const {data} = await axios.put(`/api/columns/${columnId}`, {
-                    title: newTitle
+                    title: newTitle,
+                    board_uuid: this.state.board.uuid
                 })
 
                 const idx = this.columns.findIndex(c => c.id === columnId)
@@ -271,13 +281,16 @@ export const useKanbanStore = defineStore('kanban', {
 
             // отправляем новый порядок
             await axios.put(`/api/columns/${columnId}/tasks/reorder`, {
-                order: tasks.map(t => t.id)
+                order: tasks.map(t => t.id),
+                board_uuid: this.state.board.uuid
             })
         }
         ,
         async duplicateTask(task) {
             try {
-                const {data} = await axios.post(`/api/tasks/${task.id}/duplicate`)
+                const {data} = await axios.post(`/api/tasks/${task.id}/duplicate`,{
+                    board_uuid: this.state.board.uuid
+                })
 
                 const column = this.getColumnById(data.column_id)
                 if (column) {
@@ -311,7 +324,8 @@ export const useKanbanStore = defineStore('kanban', {
             const order = this.columns.map(c => c.id)
 
            return await axios.put(`/api/boards/${this.board.uuid}/columns/reorder`, {
-                order
+                order,
+               board_uuid: this.state.board.uuid
             })
         },
         async deleteTag(tagId) {
