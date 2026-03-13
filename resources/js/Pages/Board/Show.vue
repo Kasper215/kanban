@@ -114,27 +114,24 @@ export default {
 
         this.initPush()
 
-      /*  let progressTimer = null
+        let progressTimer = null
         let refreshTimer = null
-
-        this.progress = 0
-
-        progressTimer = setInterval(() => {
-            this.progress += 100 / 600
-            if (this.progress >= 100) {
-                this.progress = 100
-            }
-        }, 100)
-
-        refreshTimer = setInterval(async () => {
-            await this.store.loadBoard(this.board.uuid)
-            this.progress = 0
-        }, 60000)*/
-
 
         navigator.serviceWorker.addEventListener('message', (event) => {
             if (event.data?.type === 'request-update') {
-                this.store.loadBoard(this.board.uuid)
+                this.progress = 0
+
+                progressTimer = setInterval(() => {
+                    this.progress += 100 / 600
+                    if (this.progress >= 100) {
+                        this.progress = 100
+                    }
+                }, 100)
+
+                refreshTimer = setInterval(async () => {
+                    await this.store.loadBoard(this.board.uuid)
+                    this.progress = 0
+                }, 60000)
             }
         });
 
@@ -173,7 +170,8 @@ export default {
 
             const subscription = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
-                applicationServerKey: this.vapidPublicKey
+                applicationServerKey: this.vapidPublicKey,
+                board_uuid: this.board.uuid
             })
 
             await axios.post('/api/push/subscribe', subscription)

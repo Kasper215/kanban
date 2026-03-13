@@ -37,7 +37,8 @@ Route::prefix('boards')->group(function () {
 
     Route::get('{uuid}', [KanbanController::class, 'getBoard']);
     // Обновить доску
-    Route::put('{uuid}', [BoardController::class, 'update']);
+    Route::put('{uuid}', [BoardController::class, 'update'])
+        ->middleware('dispatch.board');
     // Создать доску
     Route::post('/', [KanbanController::class, 'createBoard']);
     // Экспорт доски
@@ -50,7 +51,8 @@ Route::prefix('boards')->group(function () {
     // Задачи доски
     Route::post('{uuid}/tasks', [KanbanController::class, 'storeTask']);
     // Переупорядочивание колонок
-    Route::put('{uuid}/columns/reorder', [ColumnController::class, 'reorder']);
+    Route::put('{uuid}/columns/reorder', [ColumnController::class, 'reorder'])
+        ->middleware('dispatch.board');
 
     Route::post('/{uuid}/apply-template', [HomeController::class, 'applyTemplate']);
 
@@ -59,26 +61,35 @@ Route::prefix('boards')->group(function () {
 
 Route::prefix('columns')->group(function () {
     // Обновить колонку
-    Route::put('{column}', [KanbanController::class, 'updateColumn']);
+    Route::put('{column}', [KanbanController::class, 'updateColumn'])
+        ->middleware('dispatch.board');
     // Удалить колонку
-    Route::delete('{column}', [KanbanController::class, 'deleteColumn']);
+    Route::delete('{column}', [KanbanController::class, 'deleteColumn'])
+        ->middleware('dispatch.board');
     // Переименовать колонку
-    Route::put('{column}', [KanbanController::class, 'renameColumn']);
+    Route::put('{column}', [KanbanController::class, 'renameColumn'])
+        ->middleware('dispatch.board');
     // Получить задачи колонки (пагинация)
-    Route::get('{column}/tasks', [TaskController::class, 'paginated']);
+    Route::get('{column}/tasks', [TaskController::class, 'paginated'])
+        ->middleware('dispatch.board');
     // Переупорядочивание задач в колонке
-    Route::put('{column}/tasks/reorder', [TaskController::class, 'reorder']);
+    Route::put('{column}/tasks/reorder', [TaskController::class, 'reorder'])
+        ->middleware('dispatch.board');
 });
 
 Route::prefix('tasks')->group(function () {
     // Обновить задачу
-    Route::put('{task}', [KanbanController::class, 'updateTask']);
+    Route::put('{task}', [KanbanController::class, 'updateTask'])
+        ->middleware('dispatch.board');
     // Удалить задачу
-    Route::delete('{task}', [KanbanController::class, 'deleteTask']);
+    Route::delete('{task}', [KanbanController::class, 'deleteTask'])
+        ->middleware('dispatch.board');
     // Перемещение задачи
-    Route::post('move', [KanbanController::class, 'moveTask']);
+    Route::post('move', [KanbanController::class, 'moveTask'])
+        ->middleware('dispatch.board');
     // Дублирование задачи
-    Route::post('{task}/duplicate', [KanbanController::class, 'duplicate']);
+    Route::post('{task}/duplicate', [KanbanController::class, 'duplicate'])
+        ->middleware('dispatch.board');
     // Отметить задачу как просмотренную
     Route::post('{task}/view', [TaskController::class, 'markViewed']);
 });

@@ -1,46 +1,35 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Listeners;
 
-use App\Models\Board;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+use App\Events\BoardUpdated;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
 use NotificationChannels\WebPush\PushSubscription;
 
-class PushController extends Controller
+class SendBoardUpdateNotification
 {
-
-
-    public function subscribe(Request $request)
+    /**
+     * Create the event listener.
+     */
+    public function __construct()
     {
-        $boardUuid = $request->board_uuid ?? Session::get("board_uuid") ?? null;
-
-        $board = Board::query()
-            ->where("uuid", $boardUuid)
-            ->first();
-
-        PushSubscription::updateOrCreate(
-            ['endpoint' => $request->endpoint],
-            [
-                'board_id'=>$board->id ?? null,
-                'public_key' => $request->keys['p256dh'],
-                'auth_token' => $request->keys['auth'],
-                'content_encoding' => 'aesgcm', // всегда так для Chrome/Android
-            ]
-        );
-
-        return response()->json(['status' => 'subscribed']);
+        //
     }
 
-
-    public function sendTest()
+    /**
+     * Handle the event.
+     * @throws \ErrorException
+     */
+    public function handle(BoardUpdated $event): void
     {
+        $board = $event->board;
+
         $auth = [
             'VAPID' => [
-                'subject' => 'mailto:index@crm.your-cashman.com',
+                'subject' => 'mailto:'.env("VAPID_SUBJECT"),
                 'publicKey' => env('VAPID_PUBLIC_KEY'),
                 'privateKey' => env('VAPID_PRIVATE_KEY'),
             ],
@@ -61,7 +50,10 @@ class PushController extends Controller
             'url'   => '/',
         ]);
 
-        foreach (PushSubscription::all() as $sub) {
+        $subscriptions = PushSubscription::where("board_id", $board->id)
+            ->get();
+
+        foreach ($subscriptions as $sub) {
             $subscription = Subscription::create([
                 'endpoint' => $sub->endpoint,
                 'publicKey' => $sub->public_key,
@@ -71,10 +63,5 @@ class PushController extends Controller
 
             $webPush->sendOneNotification($subscription, $payload);
         }
-
-        return response()->json(['status' => 'sent']);
     }
-
-
-
 }

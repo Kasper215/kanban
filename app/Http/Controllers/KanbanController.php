@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\BoardUpdated;
 use App\Models\Board;
 use App\Models\Column;
 use App\Models\Task;
@@ -41,6 +42,8 @@ class KanbanController extends Controller
         if ($task->tags()->exists()) {
             $newTask->tags()->sync($task->tags->pluck('id'));
         }
+
+
 
         return $newTask->load('tags');
     }
