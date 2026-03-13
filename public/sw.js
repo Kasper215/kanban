@@ -32,7 +32,7 @@ self.addEventListener('push', event => {
     const title = data.title || 'Новое уведомление'
     const options = {
         body: data.body || '',
-        icon: data.icon || '/icons/icon-192.png',
+        icon: data.icon || '/icons/icon-192x192.png',
         badge: data.badge || '/icons/badge.png',
         data: {
             url: data.url || '/', // куда открыть при клике
