@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ManifestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
 use App\Models\ApiToken;
@@ -27,6 +28,8 @@ use App\Http\Controllers\BoardController;
 
 Route::get('/board/{uuid}', [BoardController::class, 'show'])
     ->name('board.show');
+
+Route::get('/manifest.json', [ManifestController::class, 'show']);
 
 
 
