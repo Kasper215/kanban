@@ -25,11 +25,11 @@ class PushController extends Controller
         $data = $request->subscription;
 
         PushSubscription::updateOrCreate(
-            ['endpoint' => $data->endpoint],
+            ['endpoint' => $data["endpoint"]],
             [
                 'board_id'=>$board->id ?? null,
-                'public_key' => $data->keys['p256dh'],
-                'auth_token' => $data->keys['auth'],
+                'public_key' => $data["keys"]['p256dh'],
+                'auth_token' => $data["keys"]['auth'],
                 'content_encoding' => 'aesgcm', // всегда так для Chrome/Android
             ]
         );
