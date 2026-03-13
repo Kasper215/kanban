@@ -18,6 +18,7 @@ class DispatchBoardEvent
      */
     public function handle(Request $request, Closure $next): Response
     {
+        Log::info("before dispathc");
         // выполняем контроллер
         $response = $next($request);
 

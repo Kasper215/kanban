@@ -43,7 +43,7 @@ class PushController extends Controller
     {
         $auth = [
             'VAPID' => [
-                'subject' => 'mailto:index@crm.your-cashman.com',
+                'subject' => env("VAPID_SUBJECT"),
                 'publicKey' => env('VAPID_PUBLIC_KEY'),
                 'privateKey' => env('VAPID_PRIVATE_KEY'),
             ],
