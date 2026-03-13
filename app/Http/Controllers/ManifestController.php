@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Str;
 
 class ManifestController extends Controller
 {
@@ -13,6 +14,7 @@ class ManifestController extends Controller
         $boardUuid = session('board_uuid') ?? $request->query('board_uuid');
 
         $manifest = [
+            "id" => $boardUuid ?? Str::uuid(),
             "name" => "KanbanCRM",
             "short_name" => "Kanban",
             "start_url" => $boardUuid
