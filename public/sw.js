@@ -28,6 +28,7 @@ self.addEventListener('push', event => {
         data = { title: 'Новое уведомление', body: event.data.text() }
     }
 
+
     const title = data.title || 'Новое уведомление'
     const options = {
         body: data.body || '',
@@ -42,6 +43,14 @@ self.addEventListener('push', event => {
     event.waitUntil(
         self.registration.showNotification(title, options)
     )
+
+    const updateEvent = new CustomEvent('request-update', {
+        detail: {
+            title: title,
+            body: data.body || '',
+        }
+    });
+    window.dispatchEvent(updateEvent);
 })
 
 // Клик по уведомлению
