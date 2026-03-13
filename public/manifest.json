@@ -1,11 +1,15 @@
 {
-    "name": "Kanban System",
-    "short_name": "Kanban",
-    "start_url": "/",
+    "id":"kanban-crm",
+    "name": "Доска Канбан",
+    "short_name": "Канбан",
+    "start_url": "/?source=pwa",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#4f46e5",
-    "orientation": "portrait-primary",
+    "orientation": "portrait",
+    "description": "Управляй задачами и проектами в удобной канбан-доске. Создавай колонки, перемещай карточки, отслеживай прогресс и получай уведомления в реальном времени.",
+    "categories": ["productivity", "organization", "project management"],
+    "lang": "ru",
     "icons": [
         {
             "src": "/icons/icon-192.png",
@@ -27,7 +31,20 @@
         {
             "src": "/icons/icon-512.png",
             "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/screenshots/kanban-wide.png",
+            "sizes": "1280x720",
             "type": "image/png",
+            "form_factor": "wide"
+        },
+        {
+            "src": "/screenshots/kanban-mobile.png",
+            "sizes": "375x667",
+            "type": "image/png"
         }
     ]
 }

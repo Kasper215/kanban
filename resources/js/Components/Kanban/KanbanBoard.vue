@@ -54,7 +54,7 @@
 
         <div class="flex flex-col h-screen d-flex d-md-none ">
             <!-- вкладки -->
-            <div class="flex overflow-x-auto border-b mb-2 pb-2">
+            <div class="flex overflow-x-auto border-b mb-2 p-2">
                 <button
                     type="button"
                     v-for="col in store.columns"
