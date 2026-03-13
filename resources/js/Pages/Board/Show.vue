@@ -176,7 +176,7 @@ export default {
             })
 
             await axios.post('/api/push/subscribe', {
-                ...subscription,
+                subscription,
                 board_uuid: this.board.uuid})
         }
     }
