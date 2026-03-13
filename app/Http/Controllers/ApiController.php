@@ -13,7 +13,6 @@ class ApiController extends Controller
     public function handler(Request $request)
     {
         $validated = $request->validate([
-            'board_uuid' => 'required|string',
             'thread' => 'required|integer',
             'title' => 'required|string',
             'description' => 'nullable|string',
@@ -26,7 +25,7 @@ class ApiController extends Controller
         ]);
 
         // 1. Находим доску по UUID
-        $board = Board::where('uuid', $validated['board_uuid'])->firstOrFail();
+        $board =  $request->board;
 
         // 2. Находим колонку по thread
         $column = Column::where('board_id', $board->id)

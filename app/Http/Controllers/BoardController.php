@@ -25,7 +25,7 @@ class BoardController extends Controller
         if (!is_null($board))
             return Inertia::render('Board/Show', [
                 'board' => $board,
-                'vapidPublicKey' => config('services.webpush.vapid_public_key')
+                'vapidPublicKey' => config('webpush.vapid.public_key')
             ]);
 
         // Создаём новую доску

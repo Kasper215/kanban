@@ -114,6 +114,7 @@ import ColumnModal from './ColumnModal.vue'
 import ConfirmModal from "@/Components/Kanban/ConfirmModal.vue";
 import TokenModal from '@/Components/Kanban/TokenModal.vue'
 
+
 export default {
     components: {KanbanColumn, TaskModal, ColumnModal, ConfirmModal, TokenModal},
     props: {initialBoard: Object},
