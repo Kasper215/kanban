@@ -24,7 +24,7 @@ class PushController extends Controller
 
         $data = $request->subscription;
 
-        PushSubscription::updateOrCreate(
+        \App\Models\PushSubscription::updateOrCreate(
             ['endpoint' => $data["endpoint"]],
             [
                 'board_id'=>$board->id ?? null,
