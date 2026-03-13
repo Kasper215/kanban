@@ -45,7 +45,7 @@ class SendBoardUpdateNotification
         ]);
 
         $payload = json_encode([
-            'title' => 'Тестовое уведомление',
+            'title' => 'Обновление элементов доски',
             'body'  => 'Это пуш всем подписанным клиентам',
             'url'   => '/',
         ]);

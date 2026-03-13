@@ -21,10 +21,23 @@ class DispatchBoardEvent
         $response = $next($request);
 
         // достаём board_uuid из сессии
-        $boardUuid = session('board_uuid');
+        $boardUuid = session('board_uuid') ?? null;
 
-        if ($boardUuid) {
+        $boardId = $request->board_id ?? null;
+
+        $isSend = false;
+
+        if (!is_null($boardUuid)) {
             $board = Board::where('uuid', $boardUuid)->first();
+
+            if ($board) {
+                BoardUpdated::dispatch($board);
+                $isSend = true;
+            }
+        }
+
+        if (!is_null($boardId)&&!$isSend){
+            $board = Board::where('id', $boardId)->first();
 
             if ($board) {
                 BoardUpdated::dispatch($board);

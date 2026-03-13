@@ -24,8 +24,6 @@
     </div>
 
 
-
-
     <!-- Модалка выбора шаблона -->
     <div class="modal fade" id="templateModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -174,10 +172,12 @@ export default {
             const subscription = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
                 applicationServerKey: this.vapidPublicKey,
-                board_uuid: this.board.uuid
+
             })
 
-            await axios.post('/api/push/subscribe', subscription)
+            await axios.post('/api/push/subscribe', {
+                ...subscription,
+                board_uuid: this.board.uuid})
         }
     }
 }
