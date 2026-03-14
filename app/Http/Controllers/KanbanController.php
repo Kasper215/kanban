@@ -7,6 +7,9 @@ use App\Models\Column;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use App\Mail\TaskCreatedMail;
 
 class KanbanController extends Controller
 {
@@ -91,11 +94,14 @@ class KanbanController extends Controller
             return response()->json(['status' => 'ok']);
         }
         else
-            throw new \HttpException("Запрещено удаление", 400);
+            abort(400, 'Запрещено удаление, 400');
     }
 
     public function storeTask(Request $request, $uuid)
     {
+        Log::info('storeTask called with UUID: ' . $uuid);
+        Log::info('Request data: ' . json_encode($request->all()));
+        
         $board = Board::where('uuid', $uuid)->firstOrFail();
 
         // Сдвигаем все задачи вниз
@@ -113,6 +119,12 @@ class KanbanController extends Controller
         ]);
 
         $task->tags()->sync($request->tag_ids ?? []);
+
+        try {
+            Mail::to('owner@example.com')->send(new TaskCreatedMail($task));
+        } catch (\Exception $e) {
+            Log::warning('Could not send task creation email: ' . $e->getMessage());
+        }
 
         return $task;
     }
