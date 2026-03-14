@@ -44,4 +44,27 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
+use App\Mail\TaskCreatedMail;
+use App\Models\Task;
+use Illuminate\Support\Facades\Mail;
+
+Route::get('/test-mail', function () {
+
+    $task = new Task([
+        'title' => 'Тестовая задача через маршрут',
+        'description' => 'Это описание тестовой задачи для проверки HTML-шаблона письма.',
+        'priority' => 'Высокий'
+    ]);
+
+    $recipient = config('mail.from.address') ?? 'test@example.com';
+    
+    try {
+        Mail::to($recipient)->send(new TaskCreatedMail($task));
+        return "Письмо успешно отправлено на $recipient! Проверьте Mailpit или вашу почту.";
+    } catch (\Exception $e) {
+        return "Ошибка при отправке: " . $e->getMessage();
+    }
+});
+
 require __DIR__.'/auth.php';
