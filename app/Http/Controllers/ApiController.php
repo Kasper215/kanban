@@ -7,6 +7,10 @@ use App\Models\Column;
 use App\Models\Board;
 use Illuminate\Http\Request;
 use App\Enums\CardTypeEnum;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TaskCreatedMail;
+use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class ApiController extends Controller
 {
@@ -53,6 +57,12 @@ class ApiController extends Controller
 
         // 7. Создаём задачу
         $task = Task::create($payload);
+
+        try {
+            Mail::to('owner@example.com')->send(new TaskCreatedMail($task));
+        } catch (\Exception $e) {
+            Log::warning('Could not send API task creation email: ' . $e->getMessage());
+        }
 
         return response()->json([
             'success' => true,
