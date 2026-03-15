@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\BoardController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KanbanController;
@@ -53,9 +54,21 @@ Route::prefix('boards')->group(function () {
     // Переупорядочивание колонок
     Route::put('{uuid}/columns/reorder', [ColumnController::class, 'reorder'])
         ->middleware('dispatch.board');
-
+    Route::post('/{uuid}/config', [BoardController::class, 'setConfig']);
     Route::post('/{uuid}/apply-template', [HomeController::class, 'applyTemplate']);
 
+});
+
+
+Route::prefix('cards')->group(function () {
+    // История сообщений по карточке
+    Route::get('/{cardId}/messages', [ChatController::class, 'index']);
+
+    // Отправка нового сообщения (с указанием board для webhook)
+    Route::post('/{cardId}/send', [ChatController::class, 'store']);
+
+    // Пометить сообщение как прочитанное
+    Route::post('/mark-as-read/{messageId}', [ChatController::class, 'markRead']);
 });
 
 

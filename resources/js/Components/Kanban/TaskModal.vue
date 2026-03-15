@@ -8,6 +8,7 @@ import CommentsList from "@/Components/Kanban/Comments/CommentsList.vue";
 import CommentAddForm from "@/Components/Kanban/Comments/CommentAddForm.vue";
 import TaskAttachmentsList from "@/Components/Kanban/Tasks/TaskAttachmentsList.vue";
 import TaskAttachmentsUpload from "@/Components/Kanban/Tasks/TaskAttachmentsUpload.vue";
+import CardChat from "@/Components/Kanban/Cards/CardChat.vue";
 </script>
 <template>
     <div class="modal modal-lg fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
@@ -25,8 +26,27 @@ import TaskAttachmentsUpload from "@/Components/Kanban/Tasks/TaskAttachmentsUplo
                 <!-- BODY -->
                 <div class="modal-body">
 
+                    <template v-if="task">
+                        <ul class="nav nav-tabs mb-2">
+                            <li class="nav-item">
+                                <a
+                                    @click="tab='task'"
+                                    v-bind:class="{'active': tab==='task'}"
+                                    class="nav-link" aria-current="page" href="javascript:void(0)">Задача</a>
+                            </li>
+                            <li class="nav-item">
+                                <a
+                                    @click="tab='chat'"
+                                    v-bind:class="{'active': tab==='chat'}"
+                                    class="nav-link" href="javascript:void(0)"><i class="fa-solid fa-comments me-2"></i>  Чат</a>
+                            </li>
+                        </ul>
+                    </template>
 
-                    <form @submit.prevent="submit">
+
+                    <form
+                        v-show="tab==='task'"
+                        @submit.prevent="submit">
 
                         <!-- Название -->
                         <div class="form-floating mb-3">
@@ -229,6 +249,12 @@ import TaskAttachmentsUpload from "@/Components/Kanban/Tasks/TaskAttachmentsUplo
                         </template>
 
                     </form>
+                    <template v-if="task">
+                        <CardChat
+                            :task-id="task.id"
+                            v-show="tab==='chat'"></CardChat>
+                    </template>
+
                 </div>
 
                 <!-- FOOTER -->
@@ -262,6 +288,7 @@ export default {
         return {
 
             store,
+            tab:'task',
             availableLabels: [
                 'development',
                 'bug',

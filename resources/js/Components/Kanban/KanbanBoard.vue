@@ -30,10 +30,15 @@
                     <i class="fas fa-link"></i>
                 </button>
 
+                <button class="btn btn-secondary d-flex align-items-center gap-2" @click="openConfigModal">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
 
-                <button class="btn btn-primary d-flex align-items-center gap-2" @click="openTokenModal"><i
+                <button class="btn btn-secondary d-flex align-items-center gap-2" @click="openTokenModal"><i
                     class="fa-solid fa-key"></i>
                 </button>
+
+
 
 
                 <button class="btn btn-secondary" @click="exportData">
@@ -61,8 +66,8 @@
                     type="button"
                     v-for="col in store.columns"
                     :key="col.id"
-                    class="px-4 mx-1 py-2 whitespace-nowrap cursor-pointer btn"
-                    :class="{'btn-primary': activeColumn === col.id ,'btn-secondary': activeColumn !== col.id}"
+                    class="px-4 mx-1 py-2 whitespace-nowrap cursor-pointer btn border-none"
+                    :class="{'btn-warning': activeColumn === col.id ,'btn-secondary': activeColumn !== col.id}"
                     @click="activeColumn = col.id"
                 >
                     {{ col.title }}
@@ -118,6 +123,12 @@
             @save="saveTask"
         />
 
+        <BoardSettings
+            v-if="showConfigModal"
+            @close="closeConfigModal"
+            @save="saveSettings"
+        />
+
         <ColumnModal
             v-if="showColumnModal"
             @close="closeColumnModal"
@@ -144,9 +155,10 @@ import ColumnModal from './ColumnModal.vue'
 import ConfirmModal from "@/Components/Kanban/ConfirmModal.vue";
 import TokenModal from '@/Components/Kanban/TokenModal.vue'
 import KanbanTask from './KanbanTask.vue'
+import BoardSettings from "@/Components/Kanban/BoardSettingsModal.vue";
 
 export default {
-    components: {KanbanColumn, TaskModal, ColumnModal, ConfirmModal, TokenModal,KanbanTask},
+    components: {BoardSettings, KanbanColumn, TaskModal, ColumnModal, ConfirmModal, TokenModal,KanbanTask},
     props: {initialBoard: Object},
 
     data() {
@@ -155,6 +167,7 @@ export default {
             showTokenModal: false,
             showDeleteModal: false,
             showTaskModal: false,
+            showConfigModal: false,
             showColumnModal: false,
             editingTask: null,
             currentColumnId: null,
@@ -188,6 +201,9 @@ export default {
         getTasks(columnId) {
             return this.store.columns.find(c => c.id === columnId)?.tasks ?? []
         },
+        openConfigModal(){
+            this.showConfigModal = true
+        },
         openTokenModal() {
             this.showTokenModal = true
         },
@@ -204,6 +220,9 @@ export default {
             this.dragIndex = null
 
         },
+        async saveSettings(settings) {
+            await this.store.saveConfig(this.initialBoard.uuid, settings)
+        },
         openTaskModal(columnId, task = null) {
             this.currentColumnId = columnId
             this.editingTask = task
@@ -215,7 +234,9 @@ export default {
 
             this.showTaskModal = true
         },
-
+        closeConfigModal(){
+            this.showConfigModal = false
+        },
         closeTaskModal() {
             this.showTaskModal = false
             this.editingTask = null

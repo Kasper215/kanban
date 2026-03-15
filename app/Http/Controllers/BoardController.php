@@ -86,6 +86,28 @@ class BoardController extends Controller
         return response()->json($board);
     }
 
+    public function setConfig(Request $request, $uuid)
+    {
+        $validated = $request->validate([
+            'webhook_url' => 'nullable|url',
+            'email_for_notification' => 'nullable|email',
+            'need_email_notification' => 'boolean',
+        ]);
+
+        $board = Board::where('uuid', $uuid)
+            ->firstOrFail();
+
+        $config = $board->config ?? [];
+        $config["webhook_url"] = $request->get("webhook_url") ?? null;
+        $config["email_for_notification"] = $request->get("email_for_notification") ?? null;
+        $config["need_email_notification"] = $request->get("need_email_notification") ?? false;
+
+        $board->config = $config;
+        $board->save();
+
+        return response()->json($board->config);
+    }
+
     public function export(Board $board)
     {
         return Excel::download(new BoardExport($board), "board_{$board->id}.xlsx");

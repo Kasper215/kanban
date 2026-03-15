@@ -10,10 +10,27 @@
         <footer class="text-light py-4 mt-auto">
             <div class="container text-center">
 
+                <div class="d-flex justify-content-center my-3">
+                    <!-- Checkbox -->
+                    <div class="form-check form-switch ">
+                        <input
+                            v-model="need_request_updates"
+                            type="checkbox"
+                            class="form-check-input"
+                            id="needRequestUpdates"
+                        />
+                        <label class="form-check-label text-white" for="needRequestUpdates">
+                            Запрашивать обновление доски раз в минуту
+                        </label>
+                    </div>
+                </div>
+
                 <h2 class="kanbancrm-logo mb-3">
                     <i class="fa-solid fa-layer-group me-2"></i>
                     KanbanCRM
                 </h2>
+
+
 
                 <p class="mb-1">© 2026 KanbanCRM. Все права защищены.</p>
                 <p class="small text-white">Сделано с <i class="fa-solid fa-heart text-danger"></i> в мире АйТи</p>
@@ -94,11 +111,33 @@ export default {
         return {
             store: useKanbanStore(),
             templateStore: useBoardTemplateStore(),
-            progress: 0
+            progress: 0,
+            progressTimer: null,
+            refreshTimer: null,
+            need_request_updates: false,
+        }
+    },
+
+    watch: {
+        'need_request_updates': {
+            handler(newData) {
+
+                if (this.need_request_updates)
+                    this.updateTimer()
+                else {
+                    this.progress = 0
+
+                    clearInterval(this.progressTimer)
+                    clearInterval(this.refreshTimer)
+                }
+            },
+            deep: true,
         }
     },
 
     async mounted() {
+
+        this.need_request_updates = JSON.parse(localStorage.getItem("need_request_updates") || 'false'  )
 
         // Если колонок нет → показываем модалку выбора шаблона
         if (!this.board.columns || this.board.columns.length === 0) {
@@ -112,27 +151,14 @@ export default {
 
         this.initPush()
 
-        let progressTimer = null
-        let refreshTimer = null
+        if (this.need_request_updates) {
+            this.updateTimer()
+        }
+
 
         navigator.serviceWorker.addEventListener('message', (event) => {
             if (event.data?.type === 'request-update') {
-                this.progress = 0
-
-                clearInterval(progressTimer)
-                clearInterval(refreshTimer)
-
-                progressTimer = setInterval(() => {
-                    this.progress += 100 / 600
-                    if (this.progress >= 100) {
-                        this.progress = 100
-                    }
-                }, 100)
-
-                refreshTimer = setInterval(async () => {
-                    await this.store.loadBoard(this.board.uuid)
-                    this.progress = 0
-                }, 60000)
+                this.updateTimer()
             }
         });
 
@@ -140,6 +166,24 @@ export default {
     },
 
     methods: {
+        updateTimer() {
+            this.progress = 0
+
+            clearInterval(this.progressTimer)
+            clearInterval(this.refreshTimer)
+
+            this.progressTimer = setInterval(() => {
+                this.progress += 100 / 600
+                if (this.progress >= 100) {
+                    this.progress = 100
+                }
+            }, 100)
+
+            this.refreshTimer = setInterval(async () => {
+                await this.store.loadBoard(this.board.uuid)
+                this.progress = 0
+            }, 60000)
+        },
         async selectTemplate(templateId) {
             await this.templateStore.applyTemplate(this.board.uuid, templateId)
 
@@ -156,6 +200,14 @@ export default {
         },
 
         async initPush() {
+
+            const oldRegistration = await navigator.serviceWorker.ready
+            const oldSubscription =  await oldRegistration.pushManager.getSubscription()
+            if (oldSubscription) {
+                oldSubscription.unsubscribe()
+                console.log('Старая подписка удалена')
+            }
+
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
                 console.warn('Push notifications not supported')
                 return
@@ -177,7 +229,8 @@ export default {
 
             await axios.post('/api/push/subscribe', {
                 subscription,
-                board_uuid: this.board.uuid})
+                board_uuid: this.board.uuid
+            })
         }
     }
 }
@@ -240,7 +293,7 @@ export default {
     font-size: 42px;
 
     /* градиент по тексту */
-    background: linear-gradient(90deg, #6a11cb 0%, #b993ff 50%, #e0c3fc 100%);
+    background:white;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
