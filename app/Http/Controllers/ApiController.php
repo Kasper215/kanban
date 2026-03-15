@@ -29,7 +29,7 @@ class ApiController extends Controller
         ]);
 
         // 1. Находим доску по UUID
-        $board =  $request->board;
+        $board = $request->board;
 
         // 2. Находим колонку по thread
         $column = Column::where('board_id', $board->id)
@@ -58,11 +58,17 @@ class ApiController extends Controller
         // 7. Создаём задачу
         $task = Task::create($payload);
 
-        try {
-            Mail::to('owner@example.com')->send(new TaskCreatedMail($task));
-        } catch (\Exception $e) {
-            Log::warning('Could not send API task creation email: ' . $e->getMessage());
+        $mailTo = $board->config["email_for_notification"] ?? null;
+        $canSendEmailNotification = $board->config["need_email_notification"] ?? false;
+
+        if (!is_null($mailTo) && $canSendEmailNotification) {
+            try {
+                Mail::to($mailTo)->send(new TaskCreatedMail($task));
+            } catch (\Exception $e) {
+                Log::warning('Could not send API task creation email: ' . $e->getMessage());
+            }
         }
+
 
         return response()->json([
             'success' => true,

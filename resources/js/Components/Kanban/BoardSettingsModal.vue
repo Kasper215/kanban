@@ -81,7 +81,7 @@ export default {
                 webhook_url: null,
                 email_for_notification: null,
                 need_email_notification: false,
-                need_auto_request_updates: false,
+
             }
         }
     },
