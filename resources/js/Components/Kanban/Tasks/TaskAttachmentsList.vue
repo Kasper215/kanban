@@ -57,26 +57,44 @@
                     <h6 class="mb-0 text-truncate">{{ previewFile.name }}</h6>
                     <button type="button" class="btn-close btn-close-white" @click="closePreview"></button>
                 </div>
-                <div class="card-body p-0 d-flex flex-column bg-secondary bg-opacity-10" style="min-height: 400px; max-height: 80vh;">
+                <div class="card-body p-0 d-flex flex-column bg-secondary bg-opacity-10" style="min-height: 480px; max-height: 80vh;">
                     
-                    <div v-if="isImage(previewFile)" class="text-center p-3">
-                        <img :src="getFileUrl(previewFile)" class="img-fluid rounded shadow" style="max-height: 70vh;">
+                    <!-- Image Preview -->
+                    <div v-if="isImage(previewFile)" class="text-center p-3 h-100 d-flex align-items-center justify-content-center bg-white">
+                        <img :src="getFileUrl(previewFile)" class="img-fluid rounded shadow" style="max-height: 70vh; object-fit: contain;">
                     </div>
                     
-                    <iframe v-else-if="isPdf(previewFile)" :src="getFileUrl(previewFile)" class="w-100 h-100 flex-grow-1 border-0" style="min-height: 60vh;"></iframe>
+                    <!-- PDF Preview -->
+                    <div v-else-if="isPdf(previewFile)" class="h-100 flex-grow-1">
+                        <embed :src="getFileUrl(previewFile)" type="application/pdf" width="100%" height="100%" style="min-height: 70vh;" />
+                    </div>
                     
-                    <div v-else-if="isText(previewFile)" class="p-3 bg-white flex-grow-1 overflow-auto">
-                        <pre v-if="textContent" class="small">{{ textContent }}</pre>
-                        <div v-else class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+                    <!-- Text Preview -->
+                    <div v-else-if="isText(previewFile)" class="p-3 bg-white flex-grow-1 overflow-auto h-100">
+                        <pre v-if="textContent" class="small p-3 bg-light border rounded">{{ textContent }}</pre>
+                        <div v-else class="text-center py-5">
+                            <div class="spinner-border text-primary mb-2"></div>
+                            <p class="text-muted">Загрузка содержимого...</p>
+                        </div>
                     </div>
 
-                    <div v-else class="p-5 text-center">
-                        <div class="mb-3" style="font-size: 4rem;">📎</div>
-                        <h5>Предпросмотр недоступен</h5>
-                        <p class="text-muted">Этот формат файла лучше просматривать в оригинальном приложении.</p>
-                        <a :href="getFileUrl(previewFile)" :download="previewFile.name" class="btn btn-primary">Скачать файл</a>
+                    <!-- Word / Other (No Direct Preview) -->
+                    <div v-else class="p-5 text-center flex-grow-1 d-flex flex-column align-items-center justify-content-center bg-white">
+                        <div class="mb-4" style="font-size: 5rem;">
+                            <span v-if="isWord(previewFile)">📘</span>
+                            <span v-else>📎</span>
+                        </div>
+                        <h4>{{ isWord(previewFile) ? 'Документ Word' : 'Предпросмотр недоступен' }}</h4>
+                        <p class="text-muted mb-4">
+                            {{ isWord(previewFile) 
+                                ? 'Файлы Word нельзя отобразить прямо в браузере. Пожалуйста, скачайте его для просмотра.' 
+                                : 'Этот формат файла не поддерживает быстрый просмотр.' 
+                            }}
+                        </p>
+                        <a :href="getFileUrl(previewFile)" :download="previewFile.name" class="btn btn-primary btn-lg px-5">
+                            Скачать и открыть
+                        </a>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -132,7 +150,7 @@ export default {
             return file.mime && file.mime.startsWith('audio/');
         },
         canPreview(file) {
-            return this.isImage(file) || this.isPdf(file) || this.isText(file);
+            return this.isImage(file) || this.isPdf(file) || this.isText(file) || this.isWord(file);
         },
         formatSize(bytes) {
             if (!bytes) return '0 B';
@@ -142,15 +160,18 @@ export default {
             return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
         },
         async openPreview(file) {
+            console.log("Opening preview for:", file.name, "Path:", this.getFileUrl(file));
             this.previewFile = file;
             this.textContent = null;
             
             if (this.isText(file)) {
                 try {
                     const response = await fetch(this.getFileUrl(file));
+                    if (!response.ok) throw new Error("Failed to load text");
                     this.textContent = await response.text();
                 } catch (e) {
-                    this.textContent = "Ошибка загрузки текста";
+                    console.error("Text load error:", e);
+                    this.textContent = "Ошибка загрузки текста файла.";
                 }
             }
         },
