@@ -154,7 +154,8 @@ export const useKanbanStore = defineStore('kanban', {
                     priority: task.priority,
                     due_date: task.dueDate,
                     labels: task.labels ?? [],
-                    tag_ids: task.tagIds ?? []
+                    tag_ids: task.tagIds ?? [],
+                    subtasks: task.subtasks ?? []
                 })
 
                 const column = this.getColumnById(data.column_id)
@@ -176,7 +177,8 @@ export const useKanbanStore = defineStore('kanban', {
                     priority: task.priority,
                     due_date: task.dueDate,
                     labels: task.labels ?? [],
-                    tag_ids: task.tagIds ?? []
+                    tag_ids: task.tagIds ?? [],
+                    subtasks: task.subtasks ?? []
                 })
 
                 const column = this.getColumnById(data.column_id)

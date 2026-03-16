@@ -14,6 +14,11 @@ class TaskAttachmentController extends Controller
 
     public function store(Request $request, Task $task)
     {
+        \Log::info('Загрузка вложений для задачи: ' . $task->id);
+        if (!$request->hasFile('files')) {
+            \Log::warning('Файлы не найдены в запросе');
+        }
+
         $request->validate([
             'files.*' => 'required|file|max:20480',
         ]);

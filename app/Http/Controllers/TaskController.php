@@ -48,6 +48,7 @@ class TaskController extends Controller
     {
         $tasks = $column->tasks()
             ->with('tags')
+            ->withCount('comments')
             ->orderBy('position', 'desc')
             ->paginate(5);
 

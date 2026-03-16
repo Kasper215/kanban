@@ -11,7 +11,7 @@ export const useTaskAttachmentsStore = defineStore('taskAttachments', {
         async fetch(taskId) {
             this.loading = true
             const { data } = await axios.get(`/api/task/${taskId}/attachments`)
-            this.attachments = data.attachments || []
+            this.attachments = data || []
             this.loading = false
         },
 
@@ -26,6 +26,7 @@ export const useTaskAttachmentsStore = defineStore('taskAttachments', {
             )
 
             this.attachments = data
+            return data
         }
     }
 })

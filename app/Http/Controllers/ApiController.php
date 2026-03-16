@@ -29,7 +29,13 @@ class ApiController extends Controller
             'subtasks' => 'nullable|array',
         ]);
 
-        $board = Board::where('uuid', $validated['board_uuid'])->firstOrFail();
+        // Используем доску, которую уже нашел Middleware ApiAuth
+        $board = $request->board;
+
+        if (!$board) {
+             Log::error('API Error: Board not found in request context.');
+             return response()->json(['success' => false, 'message' => 'Board context missing'], 500);
+        }
 
         $column = Column::where('board_id', $board->id)
             ->where('thread', $validated['thread'])
@@ -42,9 +48,7 @@ class ApiController extends Controller
         }
 
         $type = CardTypeEnum::from($validated['type']);
-
         $defaults = $this->defaultsByType($type);
-
         $payload = array_merge($defaults, $validated);
 
         $payload['board_id'] = $board->id;
@@ -53,9 +57,11 @@ class ApiController extends Controller
         $task = Task::create($payload);
 
         try {
+            Log::info('API: Attempting to send email for task ID: ' . $task->id);
             Mail::to('owner@example.com')->send(new TaskCreatedMail($task));
+            Log::info('API: Email sent successfully to owner@example.com');
         } catch (\Exception $e) {
-            Log::warning('Could not send API task creation email: ' . $e->getMessage());
+            Log::error('API Mail Error: ' . $e->getMessage());
         }
 
         return response()->json([
