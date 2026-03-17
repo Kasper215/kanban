@@ -151,15 +151,7 @@ export const useKanbanStore = defineStore('kanban', {
 
         async createTask(uuid, task) {
             this.loading = true
-            const {data} = await apiRequest('post', `/api/boards/${uuid}/tasks`, {
-                column_id: task.columnId,
-                title: task.title,
-                description: task.description,
-                priority: task.priority,
-                due_date: task.dueDate,
-                labels: task.labels ?? [],
-                tag_ids: task.tagIds ?? []
-            })
+            const {data} = await apiRequest('post', `/api/boards/${uuid}/tasks`, task)
             const column = this.getColumnById(data.column_id)
             if (column) column.tasks.unshift(data)
             this.loading = false
@@ -168,15 +160,7 @@ export const useKanbanStore = defineStore('kanban', {
 
         async updateTask(task) {
             this.loading = true
-            const {data} = await apiRequest('put', `/api/tasks/${task.id}`, {
-                column_id: task.columnId,
-                title: task.title,
-                description: task.description,
-                priority: task.priority,
-                due_date: task.dueDate,
-                labels: task.labels ?? [],
-                tag_ids: task.tagIds ?? []
-            })
+            const {data} = await apiRequest('put', `/api/tasks/${task.id}`, task)
             const column = this.getColumnById(data.column_id)
             if (column) {
                 const idx = column.tasks.findIndex(t => t.id === data.id)
