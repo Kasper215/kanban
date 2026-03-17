@@ -168,3 +168,8 @@ Route::prefix('task')
     ->group(function () {
     Route::post('create', [ApiController::class, 'handler']);
 });
+
+Route::prefix('test')->group(function () {
+    Route::post('/webhook', [BoardController::class,"testWebhook"]);
+    Route::post('/email', [BoardController::class,"testEmail"]);
+});

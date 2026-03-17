@@ -201,13 +201,13 @@ export default {
 
         async initPush() {
 
-            const oldRegistration = await navigator.serviceWorker.ready
+          /*  const oldRegistration = await navigator.serviceWorker.ready
             const oldSubscription =  await oldRegistration.pushManager.getSubscription()
             if (oldSubscription) {
                 oldSubscription.unsubscribe()
                 console.log('Старая подписка удалена')
             }
-
+*/
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
                 console.warn('Push notifications not supported')
                 return

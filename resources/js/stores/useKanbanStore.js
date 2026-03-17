@@ -11,7 +11,10 @@ export const useKanbanStore = defineStore('kanban', {
         tags: [],
         loading: false,
         taskPagination: {},
-        error: null
+        error: null,
+
+        webhookTestResult: null,
+        emailTestResult: null,
     }),
 
     getters: {
@@ -29,6 +32,41 @@ export const useKanbanStore = defineStore('kanban', {
     },
 
     actions: {
+        async testWebhook(payload = {
+            url:null
+        }) {
+            this.webhookTestResult = null
+            this.loading = true
+            this.error = null
+            try {
+                const { data } = await axios.post('/api/test/webhook', payload)
+                this.webhookTestResult = data
+                return  data
+            } catch (e) {
+                this.error = 'Ошибка теста вебхука'
+                console.error(e)
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async testEmail(payload = {
+            email: null,
+        }) {
+            this.emailTestResult = null
+            this.loading = true
+            this.error = null
+            try {
+                const { data } = await axios.post('/api/test/email', payload)
+                this.emailTestResult = data
+                return  data
+            } catch (e) {
+                this.error = 'Ошибка теста email'
+                console.error(e)
+            } finally {
+                this.loading = false
+            }
+        },
         async saveConfig(uuid, config) {
             const {data} = await apiRequest('post', `/api/boards/${uuid}/config`, config)
             this.board.config = data
@@ -112,6 +150,7 @@ export const useKanbanStore = defineStore('kanban', {
         },
 
         async createTask(uuid, task) {
+            this.loading = true
             const {data} = await apiRequest('post', `/api/boards/${uuid}/tasks`, {
                 column_id: task.columnId,
                 title: task.title,
@@ -123,10 +162,12 @@ export const useKanbanStore = defineStore('kanban', {
             })
             const column = this.getColumnById(data.column_id)
             if (column) column.tasks.unshift(data)
+            this.loading = false
             return data
         },
 
         async updateTask(task) {
+            this.loading = true
             const {data} = await apiRequest('put', `/api/tasks/${task.id}`, {
                 column_id: task.columnId,
                 title: task.title,
@@ -141,6 +182,7 @@ export const useKanbanStore = defineStore('kanban', {
                 const idx = column.tasks.findIndex(t => t.id === data.id)
                 if (idx !== -1) column.tasks[idx] = data
             }
+            this.loading = false
             return data
         },
 

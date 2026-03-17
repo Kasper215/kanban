@@ -76,7 +76,7 @@
         <span
             v-for="label in task.labels"
             :key="label"
-            class="badge bg-secondary me-2"
+            class="badge bg-secondary mx-2"
         >
     {{ label }}
 </span>
@@ -85,7 +85,7 @@
             <span
                 v-for="tag in task.tags"
                 :key="tag.id"
-                class="bg-info badge"
+                class="bg-info badge mx-2"
                 :style="{ background: tag.color }"
             >
                 #{{ tag.name }}
@@ -96,8 +96,8 @@
         <div v-if="hasCounters" class="task-counters d-flex align-items-center flex-wrap gap-2 mt-2 pt-1 border-top">
 
             <!-- Подзадачи (теперь как кнопка-переключатель видимости) -->
-            <span v-if="task.subtasks && task.subtasks.length" 
-                  class="task-counter" 
+            <span v-if="task.subtasks && task.subtasks.length"
+                  class="task-counter"
                   title="Показать/скрыть подзадачи"
                   @click.stop="showSubtasks = !showSubtasks"
                   style="cursor: pointer;">
@@ -147,7 +147,7 @@
             </span>
 
         </div>
-        
+
         <!-- Раскрывающийся список подзадач (компактный вид) -->
         <div v-if="showSubtasks && task.subtasks && task.subtasks.length" class="subtasks-panel mt-2 pt-2 border-top">
             <div v-for="sub in task.subtasks" :key="sub.id" class="subtask-mini-item d-flex align-items-center mb-1">

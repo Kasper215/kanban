@@ -38,6 +38,8 @@ class ChatController extends Controller
             'message' => $validated['message'],
         ]);
 
+        $board = $request->board;
+
         // Отправка на webhook, если указан
         if (!empty($board->config['webhook_url'])) {
             Http::post($board->config['webhook_url'], [

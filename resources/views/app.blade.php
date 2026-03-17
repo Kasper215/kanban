@@ -8,7 +8,7 @@
 
     <meta content="${{csrf_token()}}" name="token">
 
-    <link rel="manifest" href="/manifest.json?board_uuid={{\Illuminate\Support\Facades\Session::get("board_uuid")}}">
+    <link rel="manifest" href="/manifest.json?board_uuid={{$page['props']['board_uuid']}}">
     <meta name="theme-color" content="#4f46e5">
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
     <meta name="apple-mobile-web-app-capable" content="yes">

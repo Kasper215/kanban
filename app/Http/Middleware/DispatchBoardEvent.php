@@ -14,25 +14,23 @@ class DispatchBoardEvent
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Log::info("before dispathc");
         // выполняем контроллер
         $response = $next($request);
-
         // достаём board_uuid из сессии
-        $boardUuid = session('board_uuid') ?? $request->board_uuid  ?? null;
-
-        Log::info("boardUuid $boardUuid");
-
+        $boardUuid = session('board_uuid') ?? $request->board_uuid ?? null;
 
         if (!is_null($boardUuid)) {
             $board = Board::where('uuid', $boardUuid)->first();
-
             if ($board) {
-                BoardUpdated::dispatch($board);
+                try {
+                    BoardUpdated::dispatch($board);
+                } catch (\Exception $exception) {
+
+                }
             }
         }
 

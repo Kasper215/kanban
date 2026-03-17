@@ -57,11 +57,11 @@ Route::get('/test-mail', function () {
     $task = new Task([
         'title' => 'Тестовая задача через маршрут',
         'description' => 'Это описание тестовой задачи для проверки HTML-шаблона письма.',
-        'priority' => 'Высокий'
+        'priority' => 'medium'
     ]);
 
     $recipient = config('mail.from.address') ?? 'test@example.com';
-    
+
     try {
         Mail::to($recipient)->send(new TaskCreatedMail($task));
         return "Письмо успешно отправлено на $recipient! Проверьте Mailpit или вашу почту.";

@@ -28,8 +28,6 @@ class SendBoardUpdateNotification
     {
         $board = $event->board;
 
-        Log::info("board ".print_r($board, true));
-
         $auth = [
             'VAPID' => [
                 'subject' => 'mailto:'.env("VAPID_SUBJECT"),

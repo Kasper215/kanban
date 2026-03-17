@@ -8,10 +8,10 @@ use Illuminate\Support\Str;
 
 class ManifestController extends Controller
 {
-    public function show(Request $request)
-    {
+    public function show(Request $request) {
+
         // Берём board_uuid из сессии или параметров
-        $boardUuid = session('board_uuid') ?? $request->query('board_uuid');
+        $boardUuid =  $request->query('board_uuid');
 
         $manifest = [
             "id" => $boardUuid ?? Str::uuid(),

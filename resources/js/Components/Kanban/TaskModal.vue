@@ -263,7 +263,17 @@ import CardChat from "@/Components/Kanban/Cards/CardChat.vue";
                 <!-- FOOTER -->
                 <div class="modal-footer">
                     <button class="btn btn-secondary" @click="$emit('close')">Отмена</button>
-                    <button class="btn btn-primary" @click="submit">Сохранить</button>
+                    <button class="btn btn-primary text-center"
+                            :disabled="store.loading"
+                            @click="submit">
+                        <span v-if="!store.loading">Сохранить</span>
+                        <template v-else>
+                                <span class="spinner-border spinner-border-sm" role="status"  >
+                            <span class="visually-hidden">Loading...</span>
+                        </span> Сохраняем...
+                        </template>
+
+                    </button>
                 </div>
 
             </div>
