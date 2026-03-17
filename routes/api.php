@@ -136,7 +136,11 @@ Route::prefix('task')->group(function () {
     Route::post('{task}/comment', [TaskCommentController::class, 'store']);
     Route::get('{task}/attachments', [TaskAttachmentController::class, 'index']);
     Route::post('{task}/attachments', [TaskAttachmentController::class, 'store']);
+    Route::delete('{task}/attachments', [TaskAttachmentController::class, 'destroy']);
 });
+
+Route::delete('comments/{comment}', [TaskCommentController::class, 'destroy']);
+Route::delete('comments/{comment}/attachment', [TaskCommentController::class, 'deleteAttachment']);
 
 // --- Внешний API (требует токен) ---
 Route::prefix('task')

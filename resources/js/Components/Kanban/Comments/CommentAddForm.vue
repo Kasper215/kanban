@@ -30,9 +30,7 @@
 
             <div class="file-upload-block mb-2">
                 <label class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0z"/>
-                    </svg>
+                    <i class="fa-solid fa-paperclip"></i>
                     <span>Прикрепить фото/файлы</span>
                     <input
                         type="file"
@@ -43,10 +41,32 @@
                     />
                 </label>
                 
-                <div v-if="files.length" class="mt-2 d-flex flex-wrap gap-2">
-                    <div v-for="(file, index) in files" :key="index" class="badge bg-info text-white d-flex align-items-center gap-2 p-2">
-                        <span class="text-truncate" style="max-width: 150px;">{{ file.name }}</span>
-                        <button type="button" class="btn-close btn-close-white" style="font-size: 0.5rem" @click="removeFile(index)"></button>
+                <div v-if="files.length" class="mt-3 row g-2">
+                    <div v-for="(fileObj, index) in files" :key="index" class="col-4 col-sm-3 col-md-2">
+                        <div class="selected-file-preview position-relative border rounded bg-white overflow-hidden">
+                            <!-- Image preview -->
+                            <div v-if="fileObj.isImage" class="preview-thumb" style="height: 60px;">
+                                <img :src="fileObj.previewUrl" class="w-100 h-100 object-fit-cover" />
+                            </div>
+                            <!-- Icon for other types -->
+                            <div v-else class="preview-thumb d-flex align-items-center justify-content-center text-secondary bg-light" style="height: 60px;">
+                                <i v-if="fileObj.isPdf" class="fa-solid fa-file-pdf fa-lg"></i>
+                                <i v-else class="fa-solid fa-file fa-lg"></i>
+                            </div>
+
+                            <!-- Remove button -->
+                            <button type="button" 
+                                    class="btn-remove-file position-absolute top-0 end-0 bg-danger text-white border-0 rounded-circle d-flex align-items-center justify-content-center" 
+                                    style="width: 18px; height: 18px; margin: 2px; font-size: 10px;"
+                                    @click="removeFile(index)">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+
+                            <!-- Mini filename -->
+                            <div class="file-mini-name p-1 bg-white border-top text-truncate" style="font-size: 9px;" :title="fileObj.file.name">
+                                {{ fileObj.file.name }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -87,11 +107,26 @@ export default {
 
     methods: {
         onFilesSelected(e) {
-            const newFiles = Array.from(e.target.files)
-            this.files = [...this.files, ...newFiles]
+            const rawFiles = Array.from(e.target.files)
+            const processedFiles = rawFiles.map(file => {
+                const isImage = file.type.startsWith('image/')
+                const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
+                
+                return {
+                    file,
+                    isImage,
+                    isPdf,
+                    previewUrl: isImage ? URL.createObjectURL(file) : null
+                }
+            })
+            this.files = [...this.files, ...processedFiles]
         },
 
         removeFile(index) {
+            const fileObj = this.files[index]
+            if (fileObj.previewUrl) {
+                URL.revokeObjectURL(fileObj.previewUrl)
+            }
             this.files.splice(index, 1);
         },
 
@@ -107,11 +142,15 @@ export default {
 
                 await this.store.addComment(this.taskId, {
                     text: this.text,
-                    files: this.files,
+                    files: this.files.map(f => f.file),
                     author: this.author || 'Пользователь'
                 })
 
                 this.text = ''
+                // Чистим URL-адреса предпросмотра
+                this.files.forEach(f => {
+                    if (f.previewUrl) URL.revokeObjectURL(f.previewUrl)
+                })
                 this.files = []
             } catch (error) {
                 console.error('Ошибка при добавлении комментария:', error);
@@ -128,7 +167,20 @@ export default {
 .comment-add-container {
     margin-bottom: 2rem;
 }
-.btn-close-white {
-    filter: invert(1) grayscale(100%) brightness(200%);
+.object-fit-cover {
+    object-fit: cover;
+}
+.selected-file-preview {
+    transition: all 0.2s;
+}
+.selected-file-preview:hover {
+    border-color: #adb5bd !important;
+}
+.btn-remove-file {
+    opacity: 0.8;
+}
+.btn-remove-file:hover {
+    opacity: 1;
+    transform: scale(1.1);
 }
 </style>
