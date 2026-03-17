@@ -13,13 +13,13 @@
                     <!-- Preview Area -->
                     <div class="attachment-preview mb-2 text-center py-2 bg-white rounded border overflow-hidden position-relative pointer" @click="openPreview(file)">
                         <img v-if="isImage(file)" :src="getFileUrl(file)" :alt="file.name" class="img-fluid rounded" />
-                        <div v-else class="py-3">
-                            <span v-if="isPdf(file)" style="font-size: 2.5rem;">📕</span>
-                            <span v-else-if="isWord(file)" style="font-size: 2.5rem;">📘</span>
-                            <span v-else-if="isText(file)" style="font-size: 2.5rem;">📄</span>
-                            <span v-else-if="isVideo(file)" style="font-size: 2.5rem;">🎬</span>
-                            <span v-else-if="isAudio(file)" style="font-size: 2.5rem;">🎵</span>
-                            <span v-else style="font-size: 2.5rem;">📎</span>
+                        <div v-else class="py-3 text-secondary">
+                            <i v-if="isPdf(file)" class="fa-solid fa-file-pdf fa-3x text-danger"></i>
+                            <i v-else-if="isWord(file)" class="fa-solid fa-file-word fa-3x text-primary"></i>
+                            <i v-else-if="isText(file)" class="fa-solid fa-file-lines fa-3x text-secondary"></i>
+                            <i v-else-if="isVideo(file)" class="fa-solid fa-file-video fa-3x"></i>
+                            <i v-else-if="isAudio(file)" class="fa-solid fa-file-audio fa-3x"></i>
+                            <i v-else class="fa-solid fa-paperclip fa-3x"></i>
                             <div v-if="isPdf(file) || isText(file) || isImage(file)" class="preview-overlay">
                                 <span class="badge bg-dark bg-opacity-50">Нажми для просмотра</span>
                             </div>
@@ -37,13 +37,13 @@
 
                     <div class="attachment-actions mt-2 d-flex gap-1 justify-content-end">
                         <button type="button" v-if="canPreview(file)" @click="openPreview(file)" class="btn btn-sm btn-outline-primary" title="Быстрый просмотр">
-                            👁️
+                            <i class="fa-solid fa-eye"></i>
                         </button>
                         <a :href="getFileUrl(file)" :download="file.name" class="btn btn-sm btn-primary" title="Скачать">
-                            ⬇️
+                            <i class="fa-solid fa-circle-down"></i>
                         </a>
                         <button v-if="showDelete" @click="removeFile(file)" class="btn btn-sm btn-outline-danger" title="Удалить">
-                            ✕
+                            <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
                 </div>
@@ -82,9 +82,9 @@
 
                     <!-- Word / Other (No Direct Preview) -->
                     <div v-else class="p-5 text-center flex-grow-1 d-flex flex-column align-items-center justify-content-center bg-white">
-                        <div class="mb-4" style="font-size: 5rem;">
-                            <span v-if="isWord(previewFile)">📘</span>
-                            <span v-else>📎</span>
+                        <div class="mb-4 text-secondary">
+                            <i v-if="isWord(previewFile)" class="fa-solid fa-file-word fa-5x text-primary"></i>
+                            <i v-else class="fa-solid fa-file-circle-xmark fa-5x"></i>
                         </div>
                         <h4>{{ isWord(previewFile) ? 'Документ Word' : 'Предпросмотр недоступен' }}</h4>
                         <p class="text-muted mb-4">
@@ -168,9 +168,8 @@ export default {
 
             if (this.isText(file)) {
                 try {
-                    const response = await fetch(this.getFileUrl(file));
-                    if (!response.ok) throw new Error("Failed to load text");
-                    this.textContent = await response.text();
+                    const response = await axios.get(this.getFileUrl(file));
+                    this.textContent = response.data;
                 } catch (e) {
                     console.error("Text load error:", e);
                     this.textContent = "Ошибка загрузки текста файла.";
@@ -182,9 +181,8 @@ export default {
             this.textContent = null;
         },
         removeFile(file) {
-            if (confirm('Удалить этот файл?')) {
-                // В сторе еще нет метода удаления, но можно добавить если нужно
-                alert('Удаление пока не реализовано в API');
+            if (confirm('Удалить этот файл из задачи?')) {
+                this.store.remove(this.taskId, file.path)
             }
         }
     },

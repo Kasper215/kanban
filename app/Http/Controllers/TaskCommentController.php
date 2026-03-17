@@ -47,4 +47,39 @@ class TaskCommentController extends Controller
 
         return response()->json($comment);
     }
+
+    public function destroy(TaskComment $comment)
+    {
+        // Удаляем все вложения комментария из хранилища
+        if ($comment->attachments) {
+            foreach ($comment->attachments as $file) {
+                if (\Storage::disk('public')->exists($file['path'])) {
+                    \Storage::disk('public')->delete($file['path']);
+                }
+            }
+        }
+
+        $comment->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function deleteAttachment(Request $request, TaskComment $comment)
+    {
+        $path = $request->input('path');
+        if (!$path) return response()->json(['error' => 'Path is required'], 400);
+
+        $attachments = $comment->attachments ?? [];
+        $comment->attachments = array_values(array_filter($attachments, function ($item) use ($path) {
+            return $item['path'] !== $path;
+        }));
+        
+        $comment->save();
+
+        if (\Storage::disk('public')->exists($path)) {
+            \Storage::disk('public')->delete($path);
+        }
+
+        return response()->json($comment);
+    }
 }

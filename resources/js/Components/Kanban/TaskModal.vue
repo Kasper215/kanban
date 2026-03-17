@@ -245,7 +245,7 @@ import CardChat from "@/Components/Kanban/Cards/CardChat.vue";
                                 :taskId="local.id"
                                 @uploaded="(attachments) => local.attachments = attachments"
                             />
-                            <TaskAttachmentsList :taskId="local.id"/>
+                            <TaskAttachmentsList :taskId="local.id" :showDelete="true"/>
                             <h6 class="fw-bold my-3">Комментарии к задаче</h6>
                             <CommentAddForm :taskId="local.id"/>
                             <CommentsList :taskId="local.id"/>

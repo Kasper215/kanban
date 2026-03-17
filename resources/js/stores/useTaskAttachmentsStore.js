@@ -27,6 +27,14 @@ export const useTaskAttachmentsStore = defineStore('taskAttachments', {
 
             this.attachments = data
             return data
+        },
+
+        async remove(taskId, path) {
+            const { data } = await axios.delete(`/api/task/${taskId}/attachments`, {
+                data: { path }
+            })
+            this.attachments = data
+            return data
         }
     }
 })

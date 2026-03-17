@@ -30,6 +30,22 @@ export const useCommentsStore = defineStore('comments', {
             })
 
             this.comments.push(data)
+        },
+
+        async deleteComment(commentId) {
+            await axios.delete(`/api/comments/${commentId}`)
+            this.comments = this.comments.filter(c => c.id !== commentId)
+        },
+
+        async removeAttachment(commentId, path) {
+            const { data } = await axios.delete(`/api/comments/${commentId}/attachment`, {
+                data: { path }
+            })
+            // Обновляем коммент в списке
+            const idx = this.comments.findIndex(c => c.id === commentId)
+            if (idx !== -1) {
+                this.comments[idx] = data
+            }
         }
     }
 })
