@@ -104,7 +104,7 @@ class KanbanController extends Controller
     {
         Log::info('storeTask called with UUID: ' . $uuid);
         Log::info('Request data: ' . json_encode($request->all()));
-        
+
         $board = Board::where('uuid', $uuid)->firstOrFail();
 
         // Сдвигаем все задачи вниз
@@ -160,6 +160,9 @@ class KanbanController extends Controller
     public function moveTask(Request $request)
     {
         $task = Task::find($request->task_id);
+
+        if (is_null($task))
+            throw new \HttpException("Task Not Found",404);
 
         $task->update([
             'column_id' => $request->to_column_id,

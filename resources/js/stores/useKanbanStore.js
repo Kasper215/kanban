@@ -33,15 +33,15 @@ export const useKanbanStore = defineStore('kanban', {
 
     actions: {
         async testWebhook(payload = {
-            url:null
+            url: null
         }) {
             this.webhookTestResult = null
             this.loading = true
             this.error = null
             try {
-                const { data } = await axios.post('/api/test/webhook', payload)
+                const {data} = await axios.post('/api/test/webhook', payload)
                 this.webhookTestResult = data
-                return  data
+                return data
             } catch (e) {
                 this.error = 'Ошибка теста вебхука'
                 console.error(e)
@@ -57,9 +57,9 @@ export const useKanbanStore = defineStore('kanban', {
             this.loading = true
             this.error = null
             try {
-                const { data } = await axios.post('/api/test/email', payload)
+                const {data} = await axios.post('/api/test/email', payload)
                 this.emailTestResult = data
-                return  data
+                return data
             } catch (e) {
                 this.error = 'Ошибка теста email'
                 console.error(e)
@@ -98,7 +98,6 @@ export const useKanbanStore = defineStore('kanban', {
             this.columns.push({...data, tasks: []})
             return data
         },
-
 
 
         // Загрузка всей доски
@@ -178,6 +177,9 @@ export const useKanbanStore = defineStore('kanban', {
         },
 
         async moveTask(taskId, toColumnId, newPosition = 0) {
+            if (taskId <= 0)
+                return
+
             await apiRequest('post', '/api/tasks/move', {
                 task_id: taskId,
                 to_column_id: toColumnId,
