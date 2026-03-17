@@ -154,15 +154,17 @@ Route::post("/token", function (Request $request){
     ];
 });
 
-Route::prefix('task')
-    ->middleware(["api.auth"])
-    ->group(function () {
-    // Создание задачи через внешний API
-    Route::post('create', [ApiController::class, 'handler']);
-    // --- Комментарии ---
+// --- Комментарии и вложения (внутренний фронт, без токена) ---
+Route::prefix('task')->group(function () {
     Route::get('{task}/comments', [TaskCommentController::class, 'index']);
     Route::post('{task}/comment', [TaskCommentController::class, 'store']);
-    // --- Вложения ---
     Route::get('{task}/attachments', [TaskAttachmentController::class, 'index']);
     Route::post('{task}/attachments', [TaskAttachmentController::class, 'store']);
+});
+
+// --- Внешний API (требует токен) ---
+Route::prefix('task')
+    ->middleware(['api.auth'])
+    ->group(function () {
+    Route::post('create', [ApiController::class, 'handler']);
 });

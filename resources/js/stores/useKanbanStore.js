@@ -11,12 +11,14 @@ export const useKanbanStore = defineStore('kanban', {
         tags: [],
         loading: false,
         taskPagination: {},
-
         error: null
     }),
 
     getters: {
-        getColumnById: (state) => (id) => state.columns.find(c => c.id === id),
+        getColumnById: (state) => (id) => {
+            return state.columns.find(c => c.id === id)
+        },
+
         getTaskById: (state) => (id) => {
             for (const col of state.columns) {
                 const task = col.tasks.find(t => t.id === id)
@@ -53,22 +55,28 @@ export const useKanbanStore = defineStore('kanban', {
                 lastPage: data.last_page
             }
         },
-
         async createColumn(uuid, title) {
             const {data} = await apiRequest('post', `/api/boards/${uuid}/columns`, {title})
             this.columns.push({...data, tasks: []})
             return data
         },
 
+
+
+        // Загрузка всей доски
         async loadBoard(uuid) {
             this.loading = true
             this.error = null
+
+            // сохраняем старые данные
             const oldBoard = JSON.parse(JSON.stringify(this.board))
             const oldColumns = JSON.parse(JSON.stringify(this.columns))
 
             try {
                 const {data} = await axios.get(`/api/boards/${uuid}`)
+
                 detectChanges(oldBoard, oldColumns, data, notifyChange)
+
                 this.board = data
                 this.columns = data.columns
             } catch (e) {
@@ -78,12 +86,12 @@ export const useKanbanStore = defineStore('kanban', {
                 this.loading = false
             }
         },
-
         async markTaskViewed(taskId) {
             await apiRequest('post', `/api/tasks/${taskId}/view`)
             const task = this.columns.flatMap(col => col.tasks).find(t => t.id === taskId)
             if (task) task.last_viewed_at = new Date().toISOString()
         },
+
 
         async updateColumn(columnId, payload) {
             const {data} = await apiRequest('put', `/api/columns/${columnId}`, payload)
@@ -164,7 +172,6 @@ export const useKanbanStore = defineStore('kanban', {
             const toColumn = this.getColumnById(toColumnId)
             if (toColumn) toColumn.tasks.push({...task, column_id: toColumnId})
         },
-
         async renameColumn(columnId, newTitle) {
             const {data} = await apiRequest('put', `/api/columns/${columnId}`, {title: newTitle})
             const idx = this.columns.findIndex(c => c.id === columnId)

@@ -118,15 +118,18 @@ class KanbanController extends Controller
             'priority' => $request->priority,
             'due_date' => $request->due_date,
             'labels' => $request->labels ?? [],
+            'subtasks' => $request->subtasks ?? [],
             'position' => 0//Task::where('column_id', $request->column_id)->count()
         ]);
 
         $task->tags()->sync($request->tag_ids ?? []);
 
         try {
+            Log::info('Mail: Attempting to send task creation email for task: ' . $task->title);
             Mail::to('owner@example.com')->send(new TaskCreatedMail($task));
+            Log::info('Mail: Task creation email sent successfully.');
         } catch (\Exception $e) {
-            Log::warning('Could not send task creation email: ' . $e->getMessage());
+            Log::error('Mail Error: ' . $e->getMessage());
         }
 
         return $task;
@@ -135,9 +138,17 @@ class KanbanController extends Controller
 
     public function updateTask(Request $request, Task $task)
     {
-        $task->update($request->all());
+        $task->update([
+            'column_id' => $request->column_id,
+            'title' => $request->title,
+            'description' => $request->description,
+            'priority' => $request->priority,
+            'due_date' => $request->due_date,
+            'labels' => $request->labels ?? [],
+            'subtasks' => $request->subtasks ?? []
+        ]);
         $task->tags()->sync($request->tag_ids ?? []);
-        return $task;
+        return $task->loadCount('comments');
     }
 
     public function deleteTask(Task $task)

@@ -1,9 +1,9 @@
 <script setup>
-import CardUser from './cards/CardUser.vue'
-import CardOrder from './cards/CardOrder.vue'
-import CardText from './cards/CardText.vue'
-import CardFinance from './cards/CardFinance.vue'
-import CardDevelopment from './cards/CardDevelopment.vue'
+import CardUser from './Cards/CardUser.vue'
+import CardOrder from './Cards/CardOrder.vue'
+import CardText from './Cards/CardText.vue'
+import CardFinance from './Cards/CardFinance.vue'
+import CardDevelopment from './Cards/CardDevelopment.vue'
 import CommentsList from "@/Components/Kanban/Comments/CommentsList.vue";
 import CommentAddForm from "@/Components/Kanban/Comments/CommentAddForm.vue";
 import TaskAttachmentsList from "@/Components/Kanban/Tasks/TaskAttachmentsList.vue";
@@ -241,7 +241,10 @@ import CardChat from "@/Components/Kanban/Cards/CardChat.vue";
 
                         <template v-if="local.id">
                             <h6 class="fw-bold mb-3">Вложения к задаче</h6>
-                            <TaskAttachmentsUpload :taskId="local.id"/>
+                            <TaskAttachmentsUpload
+                                :taskId="local.id"
+                                @uploaded="(attachments) => local.attachments = attachments"
+                            />
                             <TaskAttachmentsList :taskId="local.id"/>
                             <h6 class="fw-bold my-3">Комментарии к задаче</h6>
                             <CommentAddForm :taskId="local.id"/>

@@ -16,7 +16,8 @@ class BoardController extends Controller
         $board = Board::where('uuid', $uuid)
             ->with([
                 'columns.tasks' => function ($q) {
-                    $q->orderBy('position', 'asc')
+                    $q->withCount('comments')
+                        ->orderBy('position', 'asc')
                         ->take(5);
                 }
             ])

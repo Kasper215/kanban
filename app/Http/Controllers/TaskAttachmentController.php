@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TaskAttachmentController extends Controller
 {
@@ -14,6 +15,11 @@ class TaskAttachmentController extends Controller
 
     public function store(Request $request, Task $task)
     {
+        Log::info('Загрузка вложений для задачи: ' . $task->id);
+        if (!$request->hasFile('files')) {
+            Log::warning('Файлы не найдены в запросе');
+        }
+
         $request->validate([
             'files.*' => 'required|file|max:20480',
         ]);

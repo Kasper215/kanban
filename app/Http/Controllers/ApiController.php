@@ -17,6 +17,7 @@ class ApiController extends Controller
     public function handler(Request $request)
     {
         $validated = $request->validate([
+            'board_uuid' => 'required|string',
             'thread' => 'required|integer',
             'title' => 'required|string',
             'description' => 'nullable|string',
@@ -28,15 +29,19 @@ class ApiController extends Controller
             'subtasks' => 'nullable|array',
         ]);
 
-        // 1. Находим доску по UUID
+
+        // Используем доску, которую уже нашел Middleware ApiAuth
         $board = $request->board;
 
-        // 2. Находим колонку по thread
+        if (!$board) {
+             Log::error('API Error: Board not found in request context.');
+             return response()->json(['success' => false, 'message' => 'Board context missing'], 500);
+        }
+
         $column = Column::where('board_id', $board->id)
             ->where('thread', $validated['thread'])
             ->first();
 
-        // 3. Если колонки нет → используем thread = 0
         if (!$column) {
             $column = Column::where('board_id', $board->id)
                 ->where('thread', 0)
@@ -45,17 +50,13 @@ class ApiController extends Controller
 
         $type = CardTypeEnum::from($validated['type']);
 
-        // 4. Дефолтные данные по типу
         $defaults = $this->defaultsByType($type);
 
-        // 5. Объединяем дефолты и входные данные
         $payload = array_merge($defaults, $validated);
 
-        // 6. Проставляем реальные ID
         $payload['board_id'] = $board->id;
         $payload['column_id'] = $column->id;
 
-        // 7. Создаём задачу
         $task = Task::create($payload);
 
         $mailTo = $board->config["email_for_notification"] ?? null;
@@ -68,7 +69,6 @@ class ApiController extends Controller
                 Log::warning('Could not send API task creation email: ' . $e->getMessage());
             }
         }
-
 
         return response()->json([
             'success' => true,
