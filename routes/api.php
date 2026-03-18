@@ -56,6 +56,7 @@ Route::prefix('boards')->group(function () {
         ->middleware('dispatch.board');
     Route::post('/{uuid}/config', [BoardController::class, 'setConfig']);
     Route::post('/{uuid}/apply-template', [HomeController::class, 'applyTemplate']);
+    Route::post('{uuid}/refresh-uuid', [BoardController::class, 'refreshUuid']);
 
 });
 

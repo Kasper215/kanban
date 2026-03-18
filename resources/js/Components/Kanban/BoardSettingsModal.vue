@@ -98,6 +98,26 @@
                             </label>
                         </div>
 
+                        <hr>
+
+                        <div class="mt-4">
+                            <h6>Безопасность</h6>
+                            <p class="text-muted small">
+                                Ключ сессии используется для доступа к доске. При обновлении ключа, старый адрес доски перестанет работать.
+                            </p>
+                            <button
+                                @click="handleRefreshUuid"
+                                type="button"
+                                class="btn btn-outline-danger w-100"
+                                :disabled="boardStore.loading"
+                            >
+                                <span v-if="!boardStore.loading">Обновить ключ сессии</span>
+                                <template v-else>
+                                    <span class="spinner-border spinner-border-sm" role="status"></span> Обновляем...
+                                </template>
+                            </button>
+                        </div>
+
                     </form>
                 </div>
 
@@ -151,6 +171,20 @@ export default {
         async submit() {
             this.$emit('save', this.settings)
             this.$emit("close")
+        },
+        async handleRefreshUuid() {
+            if (!confirm('Вы уверены, что хотите обновить ключ сессии? Старая ссылка на доску перестанет работать.')) {
+                return
+            }
+
+            try {
+                const data = await this.boardStore.refreshUuid(this.boardStore.board.uuid)
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url
+                }
+            } catch (e) {
+                alert('Не удалось обновить ключ сессии')
+            }
         }
     },
 
