@@ -177,7 +177,7 @@ export const useKanbanStore = defineStore('kanban', {
         },
 
         async moveTask(taskId, toColumnId, newPosition = 0) {
-            if (taskId <= 0)
+            if (taskId <= 0 || !taskId)
                 return
 
             await apiRequest('post', '/api/tasks/move', {
