@@ -165,6 +165,7 @@ export const useKanbanStore = defineStore('kanban', {
 
         async updateTask(task) {
             this.loading = true
+            this.error = null
             try {
                 const { data } = await apiRequest('put', `/api/tasks/${task.id}`, task)
                 const column = this.getColumnById(data.column_id)
