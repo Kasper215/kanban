@@ -179,4 +179,19 @@ class BoardController extends Controller
     {
         return Excel::download(new BoardExport($board), "board_{$board->id}.xlsx");
     }
+
+    public function refreshUuid(Request $request, $uuid)
+{
+    $board = Board::where('uuid', $uuid)->firstOrFail();
+
+    $newUuid = (string) Str::uuid();
+    $board->uuid = $newUuid;
+    $board->save();
+
+    return response()->json([
+        'status' => 'success',
+        'new_uuid' => $newUuid,
+        'redirect_url' => "/board/" . $newUuid
+    ]);
+}
 }

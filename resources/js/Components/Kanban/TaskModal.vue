@@ -103,7 +103,7 @@ import CardChat from "@/Components/Kanban/Cards/CardChat.vue";
                                 class="form-control"
                                 id="taskDueDate"
                                 placeholder="Дата"
-                                v-model="local.dueDate"
+                                v-model="local.due_date"
                             >
                             <label for="taskDueDate">Срок выполнения</label>
                         </div>
@@ -122,7 +122,7 @@ import CardChat from "@/Components/Kanban/Cards/CardChat.vue";
                                     <input
                                         type="checkbox"
                                         :value="tag.id"
-                                        v-model="local.tagIds"
+                                        v-model="local.tag_ids"
                                         class="form-check-input me-2"
                                     >
                                     {{ tag.name }}
@@ -314,17 +314,17 @@ export default {
             local: this.task
                 ? {
                     ...this.task,
-                    tagIds: this.task.tags?.map(t => t.id) ?? [],
+                    tag_ids: this.task.tags?.map(t => t.id) ?? [],
                     subtasks: this.task.subtasks ?? []
                 }
                 : {
                     title: '',
                     description: '',
                     priority: 'low',
-                    dueDate: '',
-                    tagIds: [],
+                    due_date: '',
+                    tag_ids: [],
                     labels: ['development'], // дефолт
-                    columnId: this.columnId,
+                    column_id: this.columnId,
                     subtasks: []
                 },
 
@@ -376,15 +376,15 @@ export default {
                 this.newTagColor
             )
 
-            this.local.tagIds.push(tag.id)
+            this.local.tag_ids.push(tag.id)
 
             this.newTagName = ''
             this.newTagColor = '#999999'
         },
 
         async submit() {
-            this.local.columnId = this.columnId
-            this.local.tagIds = [...this.local.tagIds]
+            this.local.column_id = this.columnId
+            this.local.tag_ids = [...this.local.tag_ids]
 
             if (!this.local.id) {
                 await this.store.createTask(this.store.board.uuid, this.local)
