@@ -41,7 +41,7 @@
 
 
 
-                <button class="btn btn-secondary" @click="exportData">
+                <button class="btn btn-secondary" @click="openExportModal">
                     <i class="fas fa-file-export"></i>
                 </button>
 
@@ -68,7 +68,7 @@
                     :key="col.id"
                     class="px-4 mx-1 py-2 whitespace-nowrap cursor-pointer btn border-none"
                     :class="{'btn-warning': activeColumn === col.id ,'btn-secondary': activeColumn !== col.id}"
-                    @click="activeColumn = col.id"
+                    @click="openActiveColumn(col)"
                 >
                     {{ col.title }}
                 </button>
@@ -143,6 +143,14 @@
             @reject="showDeleteModal = false"
         />
 
+        <ConfirmModal
+            v-model:show="showExportModal"
+            title="Выгрузить данные в эксель?"
+            description="Сейчас вас направит на страницу выгрузки данных в файле эксель."
+            @accept="exportData"
+            @reject="showExportModal = false"
+        />
+
         <TokenModal
             v-if="showTokenModal" @close="showTokenModal = false"/>
     </div>
@@ -166,6 +174,7 @@ export default {
             activeColumn: 0,
             showTokenModal: false,
             showDeleteModal: false,
+            showExportModal: false,
             showTaskModal: false,
             showConfigModal: false,
             showColumnModal: false,
@@ -197,7 +206,12 @@ export default {
     },
 
     methods: {
-
+        openActiveColumn(col){
+            this.activeColumn = null
+            this.$nextTick(()=>{
+                this.activeColumn = col.id
+            })
+        },
         getTasks(columnId) {
             return this.store.columns.find(c => c.id === columnId)?.tasks ?? []
         },
@@ -252,7 +266,9 @@ export default {
 
             this.closeTaskModal()
         },
-
+        openExportModal() {
+            this.showExportModal = true
+        },
         openColumnModal() {
             this.showColumnModal = true
         },

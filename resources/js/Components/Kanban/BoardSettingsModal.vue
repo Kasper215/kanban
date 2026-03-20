@@ -35,11 +35,11 @@
                                 type="button"
                                 class="input-group-text btn btn-outline-primary"
                                 id="basic-addon1">
-                                <span v-if="!boardStore.loading">Проверить</span>
+                                <span v-if="!boardStore.loading"><i class="fa-solid fa-play"></i></span>
                                 <template v-else>
                                 <span class="spinner-border spinner-border-sm" role="status">
                                   <span class="visually-hidden">Loading...</span>
-                                   </span> Проверяем...
+                                   </span> <i class="fa-solid fa-forward-fast"></i>
                                 </template>
                             </button>
 
@@ -52,7 +52,20 @@
                         </template>
 
 
-                        <div class="input-group mb-3">
+                        <div class="form-check mb-2">
+                            <input
+                                v-model="settings.need_email_notification"
+                                type="checkbox"
+                                class="form-check-input"
+                                id="needEmailNotification"
+                            />
+                            <label class="form-check-label" for="needEmailNotification">
+                                Отправлять уведомления на email
+                            </label>
+                        </div>
+
+
+                        <div class="input-group mb-2">
 
                             <div class="form-floating">
                                 <input
@@ -69,11 +82,11 @@
                                 @click="testEmail"
                                 type="button" class="input-group-text btn btn-outline-primary"
                                 id="basic-addon1">
-                                <span v-if="!boardStore.loading">Проверить</span>
+                                <span v-if="!boardStore.loading"><i class="fa-solid fa-play"></i></span>
                                 <template v-else>
                                 <span class="spinner-border spinner-border-sm" role="status">
                                   <span class="visually-hidden">Loading...</span>
-                                   </span> Проверяем...
+                                   </span>
                                 </template>
                             </button>
 
@@ -85,20 +98,6 @@
                             </p>
                         </template>
 
-                        <!-- Checkbox -->
-                        <div class="form-check mb-2">
-                            <input
-                                v-model="settings.need_email_notification"
-                                type="checkbox"
-                                class="form-check-input"
-                                id="needEmailNotification"
-                            />
-                            <label class="form-check-label" for="needEmailNotification">
-                                Отправлять уведомления на email
-                            </label>
-                        </div>
-
-                        <hr>
 
                         <div class="mt-4">
                             <h6>Безопасность</h6>
@@ -108,7 +107,7 @@
                             <button
                                 @click="handleRefreshUuid"
                                 type="button"
-                                class="btn btn-outline-danger w-100"
+                                class="btn btn-outline-danger w-100 my-2"
                                 :disabled="boardStore.loading"
                             >
                                 <span v-if="!boardStore.loading">Обновить ключ сессии</span>
