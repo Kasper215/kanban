@@ -65,6 +65,40 @@
                         Создаём доску...
                     </div>
 
+                    <!-- Кнопка "У меня уже есть доска" -->
+                    <div class="join-board-section mt-4 pt-3 border-top text-center">
+                        <div v-if="!showJoinInput">
+                            <button class="btn-join-existing" @click="showJoinInput = true">
+                                <i class="fa-solid fa-link me-2"></i>
+                                У меня уже есть доска
+                            </button>
+                        </div>
+                        <div v-else class="join-form mt-2">
+                            <p class="text-muted small mb-2">Введите ссылку или ключ своей доски</p>
+                            <div class="input-group">
+                                <input
+                                    v-model="joinKey"
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Например: 550e8400-... или https://..."
+                                    @keyup.enter="handleJoinBoard"
+                                    :disabled="loadingJoin"
+                                    autofocus
+                                />
+                                <button
+                                    class="btn btn-primary"
+                                    @click="handleJoinBoard"
+                                    :disabled="!joinKey.trim() || loadingJoin"
+                                >
+                                    <span v-if="loadingJoin" class="spinner-border spinner-border-sm"></span>
+                                    <i v-else class="fa-solid fa-arrow-right"></i>
+                                    Перейти
+                                </button>
+                            </div>
+                            <button class="btn btn-link btn-sm text-muted mt-1" @click="showJoinInput = false">Отмена</button>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
@@ -115,6 +149,9 @@ export default {
             progressTimer: null,
             refreshTimer: null,
             need_request_updates: false,
+            showJoinInput: false,
+            joinKey: '',
+            loadingJoin: false,
         }
     },
 
@@ -197,6 +234,19 @@ export default {
 
         installPWA() {
             window.installPWA()
+        },
+
+        async handleJoinBoard() {
+            if (!this.joinKey.trim()) return
+            this.loadingJoin = true
+            try {
+                const { data } = await axios.post('/board/join', { key: this.joinKey })
+                if (data.redirect_url) window.location.href = data.redirect_url
+            } catch (e) {
+                alert('Не удалось. Проверьте ключ или ссылку.')
+            } finally {
+                this.loadingJoin = false
+            }
         },
 
         async initPush() {
@@ -291,17 +341,38 @@ export default {
     font-weight: 700;
     letter-spacing: 0.04em;
     font-size: 42px;
-
-    /* градиент по тексту */
     background:white;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-
-    /* лёгкий tech‑вайб */
     text-transform: none;
     text-shadow: 0 0 12px rgba(186, 104, 255, 0.35);
 }
 
+.join-board-section {
+    border-top-color: #e9ecef !important;
+}
+
+.btn-join-existing {
+    background: none;
+    border: 1px dashed #ced4da;
+    color: #6c757d;
+    padding: 8px 22px;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-join-existing:hover {
+    border-color: #0d6efd;
+    color: #0d6efd;
+    background: rgba(13, 110, 253, 0.04);
+}
+
+.join-form .input-group {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
 
 </style>

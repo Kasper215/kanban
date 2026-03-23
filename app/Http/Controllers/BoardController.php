@@ -76,6 +76,35 @@ class BoardController extends Controller
         return redirect('/board/' . $board->uuid);
     }
 
+    public function join(Request $request)
+    {
+        $request->validate(['key' => 'required|string|max:512']);
+
+        $key = trim($request->input('key'));
+
+        if (preg_match('/board\/([a-zA-Z0-9-]{36})/', $key, $m)) {
+            $key = $m[1];
+        }
+        $key = substr($key, 0, 36);
+
+        $board = Board::where('uuid', $key)->first();
+
+        if (!$board) {
+            // Доска не найдена — создаём пустую (без колонок).
+            // Фронтенд сам покажет модалку выбора шаблона.
+            $board = Board::create([
+                'uuid'        => $key,
+                'title'       => 'Новая доска',
+                'description' => 'Выберите шаблон',
+            ]);
+        }
+
+        return response()->json([
+            'status'       => 'success',
+            'redirect_url' => route('board.show', ['uuid' => $board->uuid]),
+        ]);
+    }
+
     public function update(Request $request, $uuid)
     {
         $request->validate([
