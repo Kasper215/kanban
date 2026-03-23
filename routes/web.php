@@ -26,6 +26,9 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\BoardController;
 
+Route::post('/board/join', [BoardController::class, 'join'])
+    ->name('board.join');
+
 Route::get('/board/{uuid}', [BoardController::class, 'show'])
     ->name('board.show');
 

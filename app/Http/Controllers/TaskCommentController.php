@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\TaskComment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TaskCommentController extends Controller
 {
@@ -53,8 +54,8 @@ class TaskCommentController extends Controller
         // Удаляем все вложения комментария из хранилища
         if ($comment->attachments) {
             foreach ($comment->attachments as $file) {
-                if (\Storage::disk('public')->exists($file['path'])) {
-                    \Storage::disk('public')->delete($file['path']);
+                if (Storage::disk('public')->exists($file['path'])) {
+                    Storage::disk('public')->delete($file['path']);
                 }
             }
         }
@@ -76,8 +77,8 @@ class TaskCommentController extends Controller
         
         $comment->save();
 
-        if (\Storage::disk('public')->exists($path)) {
-            \Storage::disk('public')->delete($path);
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
         }
 
         return response()->json($comment);
