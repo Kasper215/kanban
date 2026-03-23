@@ -33,7 +33,30 @@
 
 
                 <p class="mb-1">© 2026 KanbanCRM. Все права защищены.</p>
-                <p class="small text-white">Сделано с <i class="fa-solid fa-heart text-danger"></i> в мире АйТи</p>
+                <p class="small text-white mb-2">Сделано с <i class="fa-solid fa-heart text-danger"></i> в мире АйТи</p>
+                
+                <div class="mt-3 position-relative d-inline-block">
+                    <button class="btn btn-secondary rounded-circle" style="width: 40px; height: 40px;" @click="showColorPicker = !showColorPicker" title="Выбрать цвет фона">
+                        <i class="fa-solid fa-palette"></i>
+                    </button>
+                    <!-- Обертка для позиционирования пикера над кнопкой -->
+                    <div v-show="showColorPicker" class="position-absolute bg-white p-2 rounded shadow" style="bottom: 50px; left: 50%; transform: translateX(-50%); z-index: 1050; min-width: 260px;">
+                        <ul class="nav nav-pills nav-fill mb-2">
+                            <li class="nav-item">
+                                <a class="nav-link py-1 px-2" style="font-size: 14px; cursor: pointer;" :class="{active: bgMode === 'solid'}" @click.prevent="bgMode = 'solid'">Сплошной</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link py-1 px-2" style="font-size: 14px; cursor: pointer;" :class="{active: bgMode === 'gradient'}" @click.prevent="bgMode = 'gradient'">Градиент</a>
+                            </li>
+                        </ul>
+                        <div v-show="bgMode === 'solid'">
+                            <ColorPicker v-model:pureColor="solidColor" useType="pure" format="hex" isWidget />
+                        </div>
+                        <div v-show="bgMode === 'gradient'">
+                            <ColorPicker v-model:gradientColor="gradientColor" useType="gradient" format="hex" isWidget />
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </footer>
@@ -134,13 +157,15 @@
 import KanbanBoard from '@/Components/Kanban/KanbanBoard.vue'
 import {useKanbanStore} from "@/stores/useKanbanStore.js";
 import {useBoardTemplateStore} from "@/stores/useBoardTemplateStore.js";
+import { ColorPicker } from "vue3-colorpicker";
+import "vue3-colorpicker/style.css";
 
 export default {
     props: {
         board: Object,
         vapidPublicKey: String
     },
-    components: {KanbanBoard},
+    components: {KanbanBoard, ColorPicker},
     data() {
         return {
             store: useKanbanStore(),
@@ -152,10 +177,24 @@ export default {
             showJoinInput: false,
             joinKey: '',
             loadingJoin: false,
+            showColorPicker: false,
+            bgMode: (localStorage.getItem('board_bg_color') || '').includes('gradient') ? 'gradient' : 'solid',
+            solidColor: (!((localStorage.getItem('board_bg_color') || '').includes('gradient'))) ? (localStorage.getItem('board_bg_color') || '#4f46e5') : '#4f46e5',
+            gradientColor: ((localStorage.getItem('board_bg_color') || '').includes('gradient')) ? localStorage.getItem('board_bg_color') : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         }
     },
 
     watch: {
+        solidColor(newVal) {
+            if (this.bgMode === 'solid') this.applyBgColor(newVal);
+        },
+        gradientColor(newVal) {
+            if (this.bgMode === 'gradient') this.applyBgColor(newVal);
+        },
+        bgMode(newMode) {
+            if (newMode === 'solid') this.applyBgColor(this.solidColor);
+            if (newMode === 'gradient') this.applyBgColor(this.gradientColor);
+        },
         'need_request_updates': {
             handler(newData) {
 
@@ -203,6 +242,10 @@ export default {
     },
 
     methods: {
+        applyBgColor(newColor) {
+            localStorage.setItem('board_bg_color', newColor);
+            document.body.style.setProperty('background', newColor, 'important');
+        },
         updateTimer() {
             this.progress = 0
 

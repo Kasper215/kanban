@@ -56,5 +56,13 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function() {
+        var storedColor = localStorage.getItem('board_bg_color');
+        if (storedColor) {
+            document.body.style.setProperty('background', storedColor, 'important');
+        }
+    })();
+</script>
 </body>
 </html>
