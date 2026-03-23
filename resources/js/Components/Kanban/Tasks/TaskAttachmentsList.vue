@@ -124,34 +124,51 @@ export default {
 
     methods: {
         getFileUrl(file) {
+            if (!file)
+                return ''
             return `/storage/${file.path}`;
         },
         getFileExt(filename) {
             return filename.split('.').pop().toUpperCase();
         },
         isImage(file) {
-            return file.mime && file.mime.startsWith('image/');
+            if (!file)
+                return false
+            return file?.mime && file?.mime.startsWith('image/');
         },
         isPdf(file) {
-            return file.mime === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+            if (!file)
+                return false
+            console.log("file",file)
+            return file?.mime === 'application/pdf' || file?.name.toLowerCase().endsWith('.pdf');
         },
         isWord(file) {
+            if (!file)
+                return false
             const wordMimes = [
                 'application/msword',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
             ];
-            return wordMimes.includes(file.mime) || file.name.toLowerCase().endsWith('.doc') || file.name.toLowerCase().endsWith('.docx');
+            return wordMimes.includes(file.mime) || file?.name.toLowerCase().endsWith('.doc') || file?.name.toLowerCase().endsWith('.docx');
         },
         isText(file) {
+            if (!file)
+                return false
             return (file.mime && file.mime.startsWith('text/')) || file.name.toLowerCase().endsWith('.txt') || file.name.toLowerCase().endsWith('.log');
         },
         isVideo(file) {
+            if (!file)
+                return false
             return file.mime && file.mime.startsWith('video/');
         },
         isAudio(file) {
+            if (!file)
+                return false
             return file.mime && file.mime.startsWith('audio/');
         },
         canPreview(file) {
+            if (!file)
+                return false
             return this.isImage(file) || this.isPdf(file) || this.isText(file) || this.isWord(file);
         },
         formatSize(bytes) {
@@ -162,6 +179,8 @@ export default {
             return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
         },
         async openPreview(file) {
+            if (!file)
+                return false
             console.log("Opening preview for:", file.name, "Path:", this.getFileUrl(file));
             this.previewFile = file;
             this.textContent = null;

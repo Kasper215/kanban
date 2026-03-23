@@ -92,6 +92,7 @@
             </span>
         </div>
 
+
         <!-- Инфо-строка: счётчики -->
         <div v-if="hasCounters" class="task-counters d-flex align-items-center flex-wrap gap-2 mt-2 pt-1 border-top">
 
@@ -106,6 +107,12 @@
                     {{ subtasksDone }}/{{ task.subtasks.length }}
                     <i :class="showSubtasks ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'" class="ms-1" style="font-size: 9px;"></i>
                 </span>
+            </span>
+
+            <!-- Сообщения -->
+            <span v-if="task.messages?.length>0" class="task-counter" title="Сообщения">
+                <i class="fa-regular fa-comment-dots me-1"></i>
+                {{ task.messages?.length }}
             </span>
 
             <!-- Комментарии -->
@@ -123,6 +130,7 @@
             </template>
 
         </div>
+
 
         <!-- Раскрывающийся список подзадач (компактный вид) -->
         <div v-if="showSubtasks && task.subtasks && task.subtasks.length" class="subtasks-panel mt-2 pt-2 border-top">
@@ -164,6 +172,7 @@ export default {
         hasCounters() {
             return (this.task.subtasks?.length > 0)
                 || (this.task.comments_count > 0)
+                || (this.task.messages?.length > 0)
                 || (this.task.attachments?.length > 0)
         },
         attachmentStats() {

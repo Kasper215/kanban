@@ -34,7 +34,7 @@
 
                 <p class="mb-1">© 2026 KanbanCRM. Все права защищены.</p>
                 <p class="small text-white mb-2">Сделано с <i class="fa-solid fa-heart text-danger"></i> в мире АйТи</p>
-                
+
                 <div class="mt-3 position-relative d-inline-block">
                     <button class="btn btn-secondary rounded-circle" style="width: 40px; height: 40px;" @click="showColorPicker = !showColorPicker" title="Выбрать цвет фона">
                         <i class="fa-solid fa-palette"></i>
@@ -72,7 +72,7 @@
 
                 <div class="modal-body">
 
-                    <div class="template-list">
+                    <div class="template-list ">
                         <div
                             v-for="tpl in templateStore.templates"
                             :key="tpl.id"
@@ -128,7 +128,6 @@
         </div>
     </div>
 
-    <!-- Твоя PWA-модалка -->
     <div class="modal fade" id="installPwaModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -341,36 +340,46 @@ export default {
 }
 
 .template-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr; /* 👈 мобилка: 1 колонка */
+    gap: 12px;
 }
 
 .template-card {
-    width: 180px;
-    padding: 20px;
-    border-radius: 12px;
-    background: #f7f7f7;
-    text-align: center;
     cursor: pointer;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    text-align: center;
     transition: 0.2s;
-    border: 1px solid #ddd;
 }
 
 .template-card:hover {
-    background: #eaeaea;
-    transform: translateY(-3px);
+    background: #f8f9fa;
+    transform: translateY(-2px);
 }
 
 .template-icon {
-    font-size: 32px;
-    margin-bottom: 10px;
+    font-size: 24px;
+    margin-bottom: 8px;
 }
 
 .template-title {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 14px;
+}
+
+/* 👇 планшеты */
+@media (min-width: 768px) {
+    .template-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 👇 десктоп: 3 в ряд */
+@media (min-width: 1024px) {
+    .template-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 .loading {
@@ -383,17 +392,20 @@ export default {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     font-weight: 700;
     letter-spacing: 0.04em;
-    font-size: 42px;
+    font-size: 36px;
     background:white;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     text-transform: none;
-    text-shadow: 0 0 12px rgba(186, 104, 255, 0.35);
+
 }
 
 .join-board-section {
     border-top-color: #e9ecef !important;
+    position: sticky;
+    bottom: 20px;
+    background-color: white;
 }
 
 .btn-join-existing {

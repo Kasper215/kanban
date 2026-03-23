@@ -57,7 +57,7 @@
 
         </header>
 
-        <div class="flex flex-col h-screen d-flex d-md-none ">
+        <div class="flex flex-col d-flex d-md-none ">
             <!-- вкладки -->
             <div
                 style="position: sticky;z-index: 100;top: 5px;"
@@ -197,7 +197,9 @@ export default {
         this.store.columns = this.initialBoard.columns
         this.store.board = this.initialBoard
 
-        this.activeColumn = this.store.columns[0]?.id || null
+        this.$nextTick(()=>{
+            this.activeColumn = this.store.columns[0]?.id || null
+        })
         /*   this.store.columns.forEach(col => {
                this.store.loadTasks(col.id)
            })

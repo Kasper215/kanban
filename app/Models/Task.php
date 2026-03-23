@@ -32,7 +32,7 @@ class Task extends Model
         'last_viewed_at' => 'datetime'
     ];
 
-    protected $with=["tags"];
+    protected $with=["tags","messages"];
 
     public function board()
     {
@@ -52,6 +52,11 @@ class Task extends Model
     public function comments()
     {
         return $this->hasMany(TaskComment::class);
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(CardMessage::class);
     }
 
 }
