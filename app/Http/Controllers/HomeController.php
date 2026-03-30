@@ -10,6 +10,10 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
+        if ($request->has('new')) {
+            $request->session()->forget('board_uuid');
+        }
+
         // Если доска уже есть — отправляем туда
         if ($request->session()->has('board_uuid')) {
             $uuid = $request->session()->get('board_uuid');

@@ -122,6 +122,9 @@
 
                 <!-- FOOTER -->
                 <div class="modal-footer">
+                    <a href="/?new=1" target="_blank" class="btn btn-outline-secondary me-auto">
+                        Новая сессия <i class="fa-solid fa-arrow-up-right-from-square small ms-1"></i>
+                    </a>
                     <button class="btn btn-secondary" @click="$emit('close')">Отмена</button>
                     <button class="btn btn-primary" @click="submit">Сохранить</button>
                 </div>
